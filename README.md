@@ -19,6 +19,7 @@ other historians impress you into saving him.
   * 🌁 [Day 7](#day-7-bridge-repair): Bridge Repair
   * 📡 [Day 8](#day-8-resonant-collinearity): Resonant Collinearity
   * 💾 [Day 9](#day-9-disk-fragmenter): Disk Fragmenter
+  * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -45,6 +46,7 @@ which is sometimes the main dividing line between "quick 'n easy" and "needing a
 * ✖️ [Day 3](#day-3-mull-it-over): Mull It Over
 * 👮 [Day 6](#day-6-guard-gallivant): Guard Gallivant
 * 💾 [Day 9](#day-9-disk-fragmenter): Disk Fragmenter
+* 🥾 [Day 10](#-day-10-hoof-it): Hoof It
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
 
@@ -310,3 +312,37 @@ Issues included:
 
 On the bright side, _once I had it compiled and running_,
 the correct answer just popped out!
+
+### 🥾 Day 10: Hoof it
+
+You're back at the Lava Production Facility from Advent of Code 2023!
+Once again the Historians abandon you to search for their colleague,
+while a reindeer asks you to help make sense of a topographic map.
+In part 1, you determine the number of summits reachable from a trailhead.
+In part 2, you determine the number of unique trails from the trailheads
+to the summits.
+
+#### Unusual tools
+
+For Part 2 I pulled out a Manhattan distance and
+performed a _reverse_ breadth-first search from the summits to the trailheads.
+That makes it relatively easy to trace the unique trails.
+
+At this point I can't claim that using my `Common` crate is unusual.
+
+#### Experience
+
+Part 1 was fun and easy.
+For Part 2 I spent far too long chasing false trails, trying to find
+a relatively easy combinatorial formula I could use from the information I had saved.
+Eventually I concluded that I wasn't saving enough information to use those formulas,
+and while ruminating over how to work around it, I realized that
+a reverse search from the summits to the trailheads could work.
+
+For each trail, I perform a breadth-first search for the corresponding trailhead:
+* start from each summit;
+* move in each legal direction (N, S, E, W **plus** decreasing distance);
+* prune positions only when their distance to the trailhead exceeds their current level,
+  as any gradual descent would at best take you to a different trailhead.
+
+Worked great! 😁

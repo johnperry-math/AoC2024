@@ -62,6 +62,8 @@ procedure Day10 is
        (Key_Type     => Location_Record,
         Element_Type => Location_Sets.Set);
 
+   Heads_And_Summits : Trail_Maps.Map;
+
    type Search_Record is record
       Trailhead : Location_Record;
       Current   : Location_Record;
@@ -110,16 +112,15 @@ procedure Day10 is
       To_Do  : Search_Qs.Queue;
       Done   : Search_Sets.Set;
       Search : Search_Record;
-      Trails : Trail_Maps.Map;
    begin
-      Prime_Pump (To_Do, Trails);
+      Prime_Pump (To_Do, Heads_And_Summits);
       while Natural (To_Do.Current_Use) > 0 loop
          To_Do.Dequeue (Search);
          for Dir in Motion_2D.Direction loop
             declare
-               Curr        : Location_Record := Search.Current;
-               Height      : Digit := Map (Curr.Row, Curr.Col);
-               Offset      : Motion_2D.Drc := Motion_2D.Deltas (Dir);
+               Curr        : constant Location_Record := Search.Current;
+               Height      : constant Digit := Map (Curr.Row, Curr.Col);
+               Offset      : constant Motion_2D.Drc := Motion_2D.Deltas (Dir);
                Next        : Search_Record;
                Next_Height : Digit;
             begin
@@ -127,11 +128,12 @@ procedure Day10 is
                   Next :=
                     (Search.Trailhead,
                      (Curr.Row + Offset.DRow, Curr.Col + Offset.DCol));
-                  if not Done.Contains (Next) then
-                     Next_Height := Map (Next.Current.Row, Next.Current.Col);
-                     if Height + 1 = Next_Height then
+                  Next_Height := Map (Next.Current.Row, Next.Current.Col);
+                  if Height + 1 = Next_Height then
+                     if not Done.Contains (Next) then
                         if Next_Height = 9 then
-                           Trails (Search.Trailhead).Include (Next.Current);
+                           Heads_And_Summits (Search.Trailhead).Include
+                             (Next.Current);
                         else
                            To_Do.Enqueue (Next);
                         end if;
@@ -141,13 +143,62 @@ procedure Day10 is
             end;
          end loop;
       end loop;
-      for Each of Trails loop
-         Result := @ + Natural (Each.Length);
+      for Trail of Heads_And_Summits loop
+         Result := @ + Natural (Trail.Length);
       end loop;
       IO.Put_Line ("The sum of scores on the trail map is" & Result'Image);
    end Part_1;
 
+   function Distance (Start, Finish : Location_Record) return Natural
+   is (abs (Start.Row - Finish.Row) + abs (Start.Col - Finish.Col));
+
+   procedure Part_2 is
+      Result : Natural := 0;
+      To_Do  : Search_Qs.Queue;
+      Search : Search_Record;
+   begin
+      for Cursor in Heads_And_Summits.Iterate loop
+         declare
+            Head : constant Location_Record := Trail_Maps.Key (Cursor);
+         begin
+            for Summit of Heads_And_Summits (Head) loop
+               To_Do.Enqueue ((Head, Summit));
+            end loop;
+         end;
+      end loop;
+      while Natural (To_Do.Current_Use) > 0 loop
+         To_Do.Dequeue (Search);
+         for Dir in Motion_2D.Direction loop
+            declare
+               Curr        : constant Location_Record := Search.Current;
+               Height      : constant Digit := Map (Curr.Row, Curr.Col);
+               Offset      : constant Motion_2D.Drc := Motion_2D.Deltas (Dir);
+               Next        : Search_Record;
+               Next_Height : Digit;
+            begin
+               if Motion_Remains_In_Map (Curr, Offset) then
+                  Next :=
+                    (Search.Trailhead,
+                     (Curr.Row + Offset.DRow, Curr.Col + Offset.DCol));
+                  Next_Height := Map (Next.Current.Row, Next.Current.Col);
+                  if Height - 1 = Next_Height then
+                     if Next.Current = Search.Trailhead then
+                        Result := @ + 1;
+                     elsif Distance (Next.Trailhead, Next.Current)
+                       <= Next_Height
+                     then
+                        To_Do.Enqueue (Next);
+                     end if;
+                  end if;
+               end if;
+            end;
+         end loop;
+      end loop;
+      IO.Put_Line ("The sum of trailhead ratings is" & Result'Image);
+   end Part_2;
+
 begin
    Read_Input;
    Part_1;
+   Part_2;
 end Day10;
