@@ -21,6 +21,7 @@ other historians impress you into saving him.
   * 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
   * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
   * 🎱 [Day 11](#-day-11-plutonian-pebbles): Plutonian Pebbles
+  * 🌽 [Day 12]
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -410,3 +411,47 @@ track a list like
     0 (3), 4 (4), 6 (1), 8 (3), 9 (1), 20 (1), 24 (1)
 
 Makes things short 'n quick.
+
+### 🌽 Day 12: Garden Groups
+
+You're back at a garden you first visited in the 2023 Advent of Code.
+While the historians go searching, a local elf asks you to help them figure
+the cost of fencing their gardens.
+In part 1, the cost is the sum of the products
+of the area and perimeter of each garden region.
+In part 2, the elves qualify for a discount, so the cost is the sum of the products
+of the area and number of sides of each region.
+
+#### Unusual tools
+
+* I had to look at multiple examples.
+  **Thank you thank you** Mr. Puzzle Master
+  for providing that last example!
+* Instead of one BFS to solve a part of a puzzle,
+  I used multiple BFS.
+
+#### Experience
+
+Fun, but not easy, especially when I got the wrong answer on part 2,
+because I hadn't read that last example.
+Once again I write, **thank you thank you** Mr. Puzzle Master!
+Earning that gold star felt _extremely_ rewarding this time.
+
+The approach I used was to scan by row and column,
+BFS at each unconsidered point to construct the region,
+and identify fencing by comparing neighboring plots.
+That's enough to finish Part 1
+(and already enough to bump it up to the next highest list).
+For Part 2, I identified sides for each region
+by picking one of its fence pieces at random,
+then following in the fences direction
+to remove other pieces on that side.
+That successfully identifies one unique piece of fence per side.
+
+The additional wrinkle in part 2,
+illustrated by the additional example,
+is resolved by identifying which side of the fence
+corresponds to the plot we're studying.
+It then suffices to check
+that the corresponding plot as you walk along the fence
+contains the same plant.
