@@ -10,17 +10,17 @@ other historians impress you into saving him.
 
 * [Ranking of problems by difficulty](#ranking-of-problems-by-difficulty)
 * Problems in order of appearance
-  * 📋 [Day 1](#day-1-historian-hysteria): Historian Hysteria
-  * ☢️ [Day 2](#day-2-red-nosed-reports): Red-Nosed Reports
-  * ✖️ [Day 3](#day-3-mull-it-over): Mull It Over
-  * 🎄 [Day 4](#day-4-ceres-search): Ceres Search
-  * 🖨️ [Day 5](#day-5-print-queue): Print Queue
-  * 👮 [Day 6](#day-6-guard-gallivant): Guard Gallivant
-  * 🌁 [Day 7](#day-7-bridge-repair): Bridge Repair
-  * 📡 [Day 8](#day-8-resonant-collinearity): Resonant Collinearity
-  * 💾 [Day 9](#day-9-disk-fragmenter): Disk Fragmenter
+  * 📋 [Day 1](#-day-1-historian-hysteria): Historian Hysteria
+  * ☢️ [Day 2](#️-day-2-red-nosed-reports): Red-Nosed Reports
+  * ✖️ [Day 3](#️-day-3-mull-it-over): Mull It Over
+  * 🎄 [Day 4](#-day-4-ceres-search): Ceres Search
+  * 🖨️ [Day 5](#️-day-5-print-queue): Print Queue
+  * 👮 [Day 6](#-day-6-guard-gallivant): Guard Gallivant
+  * 🌁 [Day 7](#-day-7-bridge-repair): Bridge Repair
+  * 📡 [Day 8](#-day-8-resonant-collinearity): Resonant Collinearity
+  * 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
   * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
-  * 🎱 [Day 11]
+  * 🎱 [Day 11](#-day-11-plutonian-pebbles)
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -34,20 +34,36 @@ I might not have found these easy when I first started doing Advent of Code puzz
 In particular, I'm much more comfortable with data structures and Ada's standard library,
 which is sometimes the main dividing line between "quick 'n easy" and "needing a little more thought".
 
-* 📋 [Day 1](#day-1-historian-hysteria): Historian Hysteria
-* ☢️ [Day 2](#day-2-red-nosed-reports): Red-Nosed Reports
-* 🎄 [Day 4](#day-4-ceres-search): Ceres Search
-* 🖨️ [Day 5](#day-5-print-queue): Print Queue
-* 🌁 [Day 7](#day-7-bridge-repair): Bridge Repair
-* 📡 [Day 8](#day-8-resonant-collinearity): Resonant Collinearity
+* 📋 [Day 1](#-day-1-historian-hysteria): Historian Hysteria
+* ☢️ [Day 2](#-day-2-red-nosed-reports): Red-Nosed Reports
+* ✖️ [Day 3](#-day-3-mull-it-over): Mull It Over
+* 🎄 [Day 4](#-day-4-ceres-search): Ceres Search
+* 🖨️ [Day 5](#-day-5-print-queue): Print Queue
+* 🌁 [Day 7](#-day-7-bridge-repair): Bridge Repair
+* 📡 [Day 8](#-day-8-resonant-collinearity): Resonant Collinearity
+* 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
 
 
 ### 🤔 Puzzles needing a little more thought
 
-* ✖️ [Day 3](#day-3-mull-it-over): Mull It Over
-* 👮 [Day 6](#day-6-guard-gallivant): Guard Gallivant
-* 💾 [Day 9](#day-9-disk-fragmenter): Disk Fragmenter
+An example of "a little more thought" is when
+a brute force approach leads to a combinatorial explosion
+that exhausts memory, patience, or the heat death of the universe.
+Each puzzle listed here also gives a reason for its being so listed.
+
+* 👮 [Day 6](#-day-6-guard-gallivant): Guard Gallivant
+  Part 2: How do you detect an infinite loop?
 * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
+  - Part 1: Some sort of search algorithm: BFS, DFS, ...
+  - Part 2: How do you count the distinct paths?
+
+    (From what I read, a brute force approach to Part 2
+    is not the combinatorial explosion I expected.
+    I'm keeping it here because I put more thought into it,
+    the solution is mildly non-trivial, and either way
+    BFS or DFS really ought to land you here.)
+* 🎱 [Day 11](#-day-11-plutonian-pebbles)
+  Part 2: A brute force approach **will not work.**
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
 
