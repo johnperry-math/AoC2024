@@ -20,6 +20,7 @@ other historians impress you into saving him.
   * 📡 [Day 8](#day-8-resonant-collinearity): Resonant Collinearity
   * 💾 [Day 9](#day-9-disk-fragmenter): Disk Fragmenter
   * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
+  * 🎱 [Day 11]
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -346,3 +347,48 @@ For each trail, I perform a breadth-first search for the corresponding trailhead
   as any gradual descent would at best take you to a different trailhead.
 
 Worked great! 😁
+
+### 🎱 Day 11: Plutonian Pebbles
+
+The Historians teleport you to Pluto, so that they can explore
+the infinite corridors carved out by its ancient civilization.
+"You notice a strange set of physics-defying stones."
+Every time you blink, the numbers on the stones change,
+and sometimes the **number** of stones changes:
+* a stone numbered 0 changes to a stone numbered 1;
+* a stone with an even number of digits splits into two stones,
+  where the first stone has the left digits
+  and the second stone has the right digits;
+* any other stone, whose number is _x_,
+ changes to a stone numbered with the value 2024 * _x_.
+
+In part 1, you figure how many stones there are after you blink 25 times.
+In part 2, you figure how many stones there are after you blink 75 times.
+
+#### Unusual tools
+
+Nothing in particular.
+
+#### Experience
+
+I enjoyed this problem!
+It took me a bit to figure part 2; at first I thought
+it should be a memoization problem, where you tracked when each ball appeared,
+then worked out the number of stones in some recursive fashion.
+It soon became clear that this was a fruitless rabbit hole.
+
+A quick test verified my suspicion that brute force would quickly exhaust memory.
+(In the worst case the list doubles in size on a blink.
+While the worst case never happens, its growth is still near-exponential.)
+
+I then realized that one merely needs to track the distinct numbers
+and of how many there are of each.
+That is, instead of tracking a list like
+
+    4, 0, 4, 8, 20, 24, 4, 0, 4, 8, 8, 0, 9, 6
+
+track a list like
+
+    0 (3), 4 (4), 6 (1), 8 (3), 9 (1), 20 (1), 24 (1)
+
+Makes things short 'n quick.
