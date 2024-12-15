@@ -20,7 +20,7 @@ other historians impress you into saving him.
   * 📡 [Day 8](#-day-8-resonant-collinearity): Resonant Collinearity
   * 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
   * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
-  * 🎱 [Day 11](#-day-11-plutonian-pebbles)
+  * 🎱 [Day 11](#-day-11-plutonian-pebbles): Plutonian Pebbles
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -52,6 +52,7 @@ that exhausts memory, patience, or the heat death of the universe.
 Each puzzle listed here also gives a reason for its being so listed.
 
 * 👮 [Day 6](#-day-6-guard-gallivant): Guard Gallivant
+
   Part 2: How do you detect an infinite loop?
 * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
   - Part 1: Some sort of search algorithm: BFS, DFS, ...
@@ -62,7 +63,8 @@ Each puzzle listed here also gives a reason for its being so listed.
     I'm keeping it here because I put more thought into it,
     the solution is mildly non-trivial, and either way
     BFS or DFS really ought to land you here.)
-* 🎱 [Day 11](#-day-11-plutonian-pebbles)
+* 🎱 [Day 11](#-day-11-plutonian-pebbles): Plutonian Pebbles
+
   Part 2: A brute force approach **will not work.**
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
