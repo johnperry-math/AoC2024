@@ -21,7 +21,7 @@ other historians impress you into saving him.
   * 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
   * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
   * 🎱 [Day 11](#-day-11-plutonian-pebbles): Plutonian Pebbles
-  * 🌽 [Day 12]
+  * 🌽 [Day 12](#-day-12-garden-groups)
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -69,6 +69,13 @@ Each puzzle listed here also gives a reason for its being so listed.
   Part 2: A brute force approach **will not work.**
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
+
+* 🌽 [Day 12](#-day-12-garden-groups)
+
+  Part 1 already requires a bit of care, since there is not just 1
+  but multiple BFS (at least, that's how I did it).
+  Without the wrinkle in Part 2, this would be in the lower category,
+  but that wrinkle was non-trivial.
 
 ### 😱 Great puzzles that are jes' plain ornery
 
