@@ -194,6 +194,15 @@ package Common is
       --  ye olde Euclidean
       --  (i.e., the greatest common divisor of A and B)
 
+      type Bezout_Equation is record
+         --  if Gcd is greatest common divisor of A, B,
+         --  then Gcd = A * X + B * Y
+         Gcd  : Integer;
+         X, Y : Integer;
+      end record;
+
+      function XGcd (A, B : Integer) return Bezout_Equation;
+
       function Lcm (A, B : Base_Type) return Base_Type;
       --  the least common multiple of A and B
 
