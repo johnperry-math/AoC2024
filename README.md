@@ -22,6 +22,8 @@ other historians impress you into saving him.
   * 🥾 [Day 10](#-day-10-hoof-it): Hoof It
   * 🎱 [Day 11](#-day-11-plutonian-pebbles): Plutonian Pebbles
   * 🌽 [Day 12](#-day-12-garden-groups): Garden Groups
+  * 🕹️ [Day 13](#️-day-13-claw-contraption): Claw Contraption
+  * 🚽 [Day 14](#-day-14-restroom-redoubt): Restroom Redoubt
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -67,6 +69,16 @@ Each puzzle listed here also gives a reason for its being so listed.
 * 🎱 [Day 11](#-day-11-plutonian-pebbles): Plutonian Pebbles
 
   Part 2: A brute force approach **will not work.**
+
+* 🕹️ [Day 13](#️-day-13-claw-contraption): Claw Contraption
+
+  Parts 1 and 2 need some mathematics, albeit not nearly as much
+  as I tried to put into it.
+* 🚽 [Day 14](#-day-14-restroom-redoubt): Restroom Redoubt
+  
+  It isn't clear what the Christmas tree should look like,
+  but once you know, this actually becomes quite easy.
+
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
 
@@ -462,3 +474,57 @@ corresponds to the plot we're studying.
 It then suffices to check
 that the corresponding plot as you walk along the fence
 contains the same plant.
+
+### 🕹️ Day 13: Claw Contraption
+
+The historians now take you to a resort on a tropical island,
+which you visited in the 2020 Advent of Code.
+While they search, you find an arcade and decide to play the claw machines.
+In part 1, you try to figure out
+the least number of tokens you'd have to spend to win a prize.
+In part 2, you do the same after realizing that the claws have been offset by 10 trillion.
+
+I wish I were making that up.
+
+#### Unusual tools
+
+* In Part 1, I used my knowledge of Diophantine Equations to overengineer a solution,
+  because it never occurred to me that I was looking at a system of linear equations.
+* In Part 2, after struggling quite a while to overcome the mongo large number of potential
+  solutions that even the Diophantine approach would take, I gave up,
+  read online that basic linear algebra works, felt indignant a while,
+  then after embarrassing myself with an indignant post at forum.ada.io,
+  felt appropriately ashamed for the silly approach I used.
+
+#### Experience
+
+See the second bullet under "unusual tools".
+
+### 🚽 Day 14: Restroom Redoubt
+
+You're back to Easter Bunny Headquarters, in particular the lobby;
+you want to infiltrate the bathroom because one historian needs to use it.
+(Why you go to Easter Bunny Headquarters is a mystery to me, but we're here, so, ...)
+You have to get around the robot guards.
+In part 1, you watch the guards for 100 seconds to get an idea of how they move,
+and count the number in each quadrant.
+In part 2, one of the elves realizes the robots are the same kind they use at the North Pole,
+which means they have a particular Easter Egg:
+after a certain amount of time, they arrange themselves in the shape of a Christmas Tree.
+So you figure the number of seconds it takes for that to happen.
+
+#### Experience
+
+Part 1 was quick 'n easy. I first solved it iteratively,
+but it can be solved with a formula, so I changed after that.
+
+Part 2 took a little longer. While my daughter and I watched
+the output text file slowly stream in, wondering what the pattern should look like,
+we went to look online for a hint, and found one.
+I'd feel a little embarrased about not figuring it out,
+but even in retrospect the instructions feel a little too vague.
+
+In the unlikely case someone is looking here for a hint,
+the tree is "full" of robots, and the picture has a "frame" of robots around it,
+so if you can picture that in your head,
+then you can figure out the solution pretty quickly.
