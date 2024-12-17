@@ -11,15 +11,18 @@ procedure Day13 is
 
    package IO renames Ada.Text_IO;
 
-   package Int_IO is new IO.Integer_IO (Num => Positive);
+   type Value is range -2 ** 50 .. 2 ** 50 - 1;
 
-   package Math is new Common.Mathematics (Base_Type => Integer, Zero => 0);
+   package Int_IO is new IO.Integer_IO (Num => Value);
+
+   package Math is new
+     Common.Mathematics (Base_Type => Value, Zero => 0, One => 1);
 
    Doing_Example : constant Boolean := False;
 
    type Diophantine_System_Record is record
-      AX, AY, BX, BY : Positive;
-      CX, CY         : Positive;
+      AX, AY, BX, BY : Value;
+      CX, CY         : Value;
    end record;
 
    function Solvable (System : Diophantine_System_Record) return Boolean
@@ -83,7 +86,7 @@ procedure Day13 is
    end Read_Input;
 
    type Diophantine_Solution is record
-      X, Y : Natural;
+      X, Y : Value;
    end record;
 
    function "<" (Left, Right : Diophantine_Solution) return Boolean
@@ -97,27 +100,34 @@ procedure Day13 is
    package Diophantine_Sets is new
      Ada.Containers.Ordered_Sets (Element_Type => Diophantine_Solution);
 
-   function Positive_Solutions (A, B, C : Integer) return Diophantine_Sets.Set
+   function Cost (Solution : Diophantine_Solution) return Value
+   is (3 * Solution.X + Solution.Y);
+
+   function All_Positive_Solutions
+     (A, B, C : Value) return Diophantine_Sets.Set
    is
-      Bezout : Math.Bezout_Equation := Math.XGcd (A, B);
-      Result : Diophantine_Sets.Set;
-      X      : Integer := Bezout.X;
-      Y      : Integer := Bezout.Y;
-      Gcd    : Integer := Bezout.Gcd;
+      Bezout   : Math.Bezout_Equation := Math.XGcd (A, B);
+      Result   : Diophantine_Sets.Set;
+      X        : Value := Bezout.X;
+      Y        : Value := Bezout.Y;
+      Gcd      : Value := Bezout.Gcd;
+      Quotient : Value;
    begin
       if Gcd < 0 then
          X := @ * (-1);
          Y := @ * (-1);
          Gcd := @ * (-1);
       end if;
-      if C mod Bezout.Gcd = 0 then
+      if C mod Gcd = 0 then
          X := @ * C / Gcd;
          Y := @ * C / Gcd;
-         IO.Put_Line (X'Image & y'Image);
          if X <= 0 then
             if X = 0 and then Y <= 100 then
                Result.Insert (Diophantine_Solution'(X, Y));
             end if;
+            Quotient := X / (B / Gcd);
+            X := @ - Quotient * B / Gcd;
+            Y := @ + Quotient * A / Gcd;
             while X < 0 loop
                X := @ + B / Gcd;
                Y := @ - A / Gcd;
@@ -134,16 +144,24 @@ procedure Day13 is
                      Result.Include (Diophantine_Solution'(X, Y));
                   end if;
                end loop;
+
             end if;
+
          else
             if Y = 0 and then X <= 100 then
                Result.Insert (Diophantine_Solution'(X, Y));
             end if;
+            Quotient := Y / (A / Gcd);
+            X := @ + Quotient * B / Gcd;
+            Y := @ - Quotient * A / Gcd;
             while Y < 0 loop
                X := @ - B / Gcd;
                Y := @ + A / Gcd;
             end loop;
             if X >= 0 then
+               Quotient := X / (B / Gcd);
+               X := @ + Quotient * B / Gcd;
+               Y := @ - Quotient * A / Gcd;
                if X <= 100 and then Y <= 100 then
                   Result.Include (Diophantine_Solution'(X, Y));
                end if;
@@ -159,50 +177,87 @@ procedure Day13 is
          end if;
       end if;
       return Result;
-   end Positive_Solutions;
+   end All_Positive_Solutions;
 
    procedure Part_1 is
       X_Sols, Y_Sols, Common_Sols : Diophantine_Sets.Set;
-      Result                      : Natural := 0;
+      Result                      : Value := 0;
    begin
       for System of Systems loop
-         X_Sols := Positive_Solutions (System.AX, System.BX, System.CX);
-         Y_Sols := Positive_Solutions (System.AY, System.BY, System.CY);
+         X_Sols := All_Positive_Solutions (System.AX, System.BX, System.CX);
+         Y_Sols := All_Positive_Solutions (System.AY, System.BY, System.CY);
          Common_Sols := X_Sols.Intersection (Y_Sols);
-         IO.Put_Line (System.AX'Image & System.BX'Image);
-         for Sol of X_Sols loop
-            IO.Put (Sol.X'Image & "," & Sol.Y'Image & ";");
-         end loop;
-         IO.New_Line;
-         IO.Put_Line (System.AY'Image & System.BY'Image);
-         for Sol of Y_Sols loop
-            IO.Put (Sol.X'Image & "," & Sol.Y'Image & ";");
-         end loop;
-         IO.New_Line;
          if not Common_Sols.Is_Empty then
             declare
-               Min_Cost     : Natural := Natural'Last;
-               Cost         : Natural;
-               X_Win, Y_Win : Positive;
+               Min_Cost     : Value := Value'Last;
+               Sol_Cost     : Value;
+               X_Win, Y_Win : Value;
             begin
                for Sol of Common_Sols loop
-                  Cost := Sol.X * 3 + Sol.Y;
-                  if Cost < Min_Cost then
-                     Min_Cost := Cost;
+                  Sol_Cost := Cost (Sol);
+                  if Sol_Cost < Min_Cost then
+                     Min_Cost := Sol_Cost;
                      X_Win := Sol.X;
                      Y_Win := Sol.Y;
                   end if;
                end loop;
                Result := @ + Min_Cost;
-               IO.Put_Line (Min_Cost'Image);
-               IO.Put_Line ("====");
             end;
          end if;
       end loop;
       IO.Put_Line ("The cost to win all possible prizes is" & Result'Image);
    end Part_1;
 
+   function Cramer_It
+     (System : Diophantine_System_Record) return Diophantine_Solution
+   is ((
+          (System.CX * System.BY - System.CY * System.BX)
+          / (System.AX * System.BY - System.AY * System.BX),
+
+
+          (System.AX * System.CY - System.AY * System.CX)
+          / (System.AX * System.BY - System.AY * System.BX)));
+
+   procedure Part_2 is
+      Result                                       : Value := 0;
+      Ith                                          : Positive := 1;
+      First_Quo, First_Rem, Second_Quo, Second_Rem : Value;
+      Sol                                          : Diophantine_Solution;
+   begin
+      for System of Systems loop
+         System.CX := @ + 10_000_000_000_000;
+         System.CY := @ + 10_000_000_000_000;
+         First_Quo :=
+           (System.CX * System.BY - System.CY * System.BX)
+           / (System.AX * System.BY - System.AY * System.BX);
+         First_Rem :=
+           (System.CX * System.BY - System.CY * System.BX)
+           mod (System.AX * System.BY - System.AY * System.BX);
+         Second_Quo :=
+           (System.AX * System.CY - System.AY * System.CX)
+           / (System.AX * System.BY - System.AY * System.BX);
+         Second_Rem :=
+           (System.AX * System.CY - System.AY * System.CX)
+           mod (System.AX * System.BY - System.AY * System.BX);
+
+         if First_Rem = 0 and then Second_Rem = 0 then
+            Sol := (First_Quo, Second_Quo);
+            Result := @ + Cost (Sol);
+            IO.Put_Line
+              ("Solvable with"
+               & Value'Image (Cost (Sol))
+               & " at"
+               & Sol.X'Image
+               & Sol.Y'Image);
+         else
+            IO.Put_Line ("Not solvable");
+         end if;
+      end loop;
+      IO.Put_Line ("The cost to win all possible prizes is" & Result'Image);
+   end Part_2;
+
 begin
    Read_Input;
    Part_1;
+   Part_2;
 end Day13;

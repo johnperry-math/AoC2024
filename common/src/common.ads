@@ -179,7 +179,12 @@ package Common is
       Zero : Base_Type;
       --  additive identity for the Base_Type;
       --  for Universal_Integer use Zero => 0
+      One : Base_Type;
+      --  multiplicative identify for the Base_Type;
+      --  for Universal_Integer use One => 1
       with function "=" (Left, Right : Base_Type) return Boolean is <>;
+      with function "+" (Left, Right : Base_Type) return Base_Type is <>;
+      with function "-" (Left, Right : Base_Type) return Base_Type is <>;
       with function "*" (Left, Right : Base_Type) return Base_Type is <>;
       with function "/" (Left, Right : Base_Type) return Base_Type is <>;
       with function "mod" (Left, Right : Base_Type) return Base_Type is <>;
@@ -197,11 +202,11 @@ package Common is
       type Bezout_Equation is record
          --  if Gcd is greatest common divisor of A, B,
          --  then Gcd = A * X + B * Y
-         Gcd  : Integer;
-         X, Y : Integer;
+         Gcd  : Base_Type;
+         X, Y : Base_Type;
       end record;
 
-      function XGcd (A, B : Integer) return Bezout_Equation;
+      function XGcd (A, B : Base_Type) return Bezout_Equation;
 
       function Lcm (A, B : Base_Type) return Base_Type;
       --  the least common multiple of A and B

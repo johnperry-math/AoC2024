@@ -83,18 +83,18 @@ package body Common is
       function Lcm (A, B : Base_Type) return Base_Type
       is (A / Gcd (A, B) * B);
 
-      function XGcd (A, B : Integer) return Bezout_Equation is
-         M    : Integer := A;
-         N    : Integer := B;
-         Q, R : Integer;
+      function XGcd (A, B : Base_Type) return Bezout_Equation is
+         M    : Base_Type := A;
+         N    : Base_Type := B;
+         Q, R : Base_Type;
 
-         X_Curr       : Integer := 0;
-         X_Prev       : Integer := 1;
-         Y_Curr       : Integer := 1;
-         Y_Prev       : Integer := 0;
-         X_Tmp, Y_Tmp : Integer;
+         X_Curr       : Base_Type := Zero;
+         X_Prev       : Base_Type := Zero + One;
+         Y_Curr       : Base_Type := Zero + One;
+         Y_Prev       : Base_Type := Zero;
+         X_Tmp, Y_Tmp : Base_Type;
       begin
-         while N /= 0 loop
+         while N /= Zero loop
             Q := M / N;
             R := M mod N;
             M := N;
