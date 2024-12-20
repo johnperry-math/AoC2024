@@ -44,15 +44,15 @@ package Common is
 
       type Turn_Direction is (Left, Right);
 
-      function Opposite (Left, Right : Direction) return Boolean
+      function Opposite (First, Second : Direction) return Boolean
       is
       --  returns True iff Left and Right are opposite cardinal directions
 
-         (case Left is
-            when North => Right = South,
-            when South => Right = North,
-            when East => Right = West,
-            when West => Right = East);
+         (case First is
+            when North => Second = South,
+            when South => Second = North,
+            when East => Second = West,
+            when West => Second = East);
 
       function Turn
         (From : Direction; Towards : Turn_Direction) return Direction
