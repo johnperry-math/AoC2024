@@ -32,16 +32,17 @@ package body Common is
                Line : constant String := IO.Get_Line (Input);
             begin
                for Col in Map'Range(2) loop
-                  Map (Row, Col) := Deserialize (Line (Col));
                   if Remember_Start.Remember
                     and then Line (Col) = Remember_Start.Symbol
                   then
                      Start_Position := (Row, Col);
-                     IO.Put_Line ("Found start at" & Row'Image & Col'Image);
+                  else
+                     Map (Row, Col) := Deserialize (Line (Col));
                   end if;
                end loop;
             end;
          end loop;
+         IO.Close (Input);
       end Read_Input;
 
       procedure Put_Map is
