@@ -253,7 +253,6 @@ procedure Day15 is
       Result, New_Boxes, Prev_Boxes : Location_Sets.Set;
       Last_Size                     : Natural := 0;
    begin
-      --  IO.Put_Line ("locating boxes" & Offset.DRow'Image & Offset.DCol'Image);
       Prev_Boxes.Include (Start);
       if Wider_Map (Start.Row, Start.Col) = Box_Left then
          Prev_Boxes.Include ((Start.Row, Start.Col + 1));
@@ -286,13 +285,8 @@ procedure Day15 is
             end case;
          end loop;
          Prev_Boxes := New_Boxes.Copy;
-         --  IO.Put_Line ("----");
-         --  for Box of Prev_Boxes loop
-         --     IO.Put_Line ("Box at" & Box.Row'Image & Box.Col'Image);
-         --  end loop;
          Result.Union (Prev_Boxes);
       end loop;
-      --  IO.Put_Line ("Boxes located");
       return Result;
    end Locate_Boxes;
 
@@ -326,11 +320,8 @@ procedure Day15 is
                             => Box.Row = Row + Offset.DRow)
                      loop
                         Row := @ + Offset.DRow;
-                        --  IO.Put_Line ("Row" & Row'Image);
                      end loop;
-                     --  IO.Put_Line ("Extreme box at" & Row'Image);
                      while Row /= Curr.Row loop
-                        --  IO.Put_Line ("moving row" & Row'Image);
                         for Box of Boxes loop
                            if Box.Row = Row then
                               Wider_Map (Row + Offset.DRow, Box.Col) :=
@@ -346,11 +337,8 @@ procedure Day15 is
                             => Box.Col = Col + Offset.DCol)
                      loop
                         Col := @ + Offset.DCol;
-                        --  IO.Put_Line ("Col" & Col'Image);
                      end loop;
-                     --  IO.Put_Line ("Extreme box at" & Col'Image);
                      while Col /= Curr.Col loop
-                        --  IO.Put_Line ("moving col" & Col'Image);
                         for Box of Boxes loop
                            if Box.Col = Col then
                               Wider_Map (Box.Row, Col + Offset.DCol) :=
@@ -365,7 +353,6 @@ procedure Day15 is
                end if;
             end;
          end if;
-         --  Draw_Wider_Map (Curr);
       end loop;
       for Row in Row_Range loop
          for Col in Col_Range loop
@@ -379,7 +366,7 @@ procedure Day15 is
 
 begin
    Read_Input;
-   --  Part_1;
+   Part_1;
    Widen_Map;
    Draw_Wider_Map (Wider_Start);
    Part_2;

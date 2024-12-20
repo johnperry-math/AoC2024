@@ -24,6 +24,7 @@ other historians impress you into saving him.
   * 🌽 [Day 12](#-day-12-garden-groups): Garden Groups
   * 🕹️ [Day 13](#️-day-13-claw-contraption): Claw Contraption
   * 🚽 [Day 14](#-day-14-restroom-redoubt): Restroom Redoubt
+  * 🤖 [Day 15](#-day-15-warehouse-woes): Warehouse Woes
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -45,6 +46,7 @@ which is sometimes the main dividing line between "quick 'n easy" and "needing a
 * 🌁 [Day 7](#-day-7-bridge-repair): Bridge Repair
 * 📡 [Day 8](#-day-8-resonant-collinearity): Resonant Collinearity
 * 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
+* 🤖 [Day 15](#-day-15-warehouse-woes): Warehouse Woes
 
 
 ### 🤔 Puzzles needing a little more thought
@@ -503,7 +505,9 @@ See the second bullet under "unusual tools".
 ### 🚽 Day 14: Restroom Redoubt
 
 You're back to Easter Bunny Headquarters, in particular the lobby;
-you want to infiltrate the bathroom because one historian needs to use it.
+a historian needs to use the bathroom, so you need to infiltrate it,
+which you first infiltrated in the 2016 Advent of Code.
+(I think? I haven't yet gone back to those puzzles.)
 (Why you go to Easter Bunny Headquarters is a mystery to me, but we're here, so, ...)
 You have to get around the robot guards.
 In part 1, you watch the guards for 100 seconds to get an idea of how they move,
@@ -528,3 +532,31 @@ In the unlikely case someone is looking here for a hint,
 the tree is "full" of robots, and the picture has a "frame" of robots around it,
 so if you can picture that in your head,
 then you can figure out the solution pretty quickly.
+
+### 🤖 Day 15: Warehouse Woes
+
+The historians want to search the sea inhabited by the lanternfish
+you first met in the 2021 Advent of Code.
+While the historians skedaddle in every which direction,
+you huddle with the lanternfish, who need your help
+with the robots that maintain their warehouses.
+In part 1, you help them determine the eventual state of one warehouse.
+In part 2, you help them determine the eventual state of a second warehouse
+where everything but the robot is twice as wide.
+
+#### Unusual tools
+
+Discovered a bugfix in the `Common` crate's logic to detect the starting position.
+
+#### Experience
+
+Fun and relatively straightforward, which both surprised and relieved me.
+Bug fixing was quick and easy:
+* For some reason I first computed the GPS by counting walls instead of boxes.
+* For Part 2 I had a couple of infinite loops.
+  - One was on account of an incorrect criterion used
+    to terminate the `while` loop in `Locate_Boxes`.
+  - Tother was on account of my mysteriously trying to change only the row
+    when moving boxes and the robot. This provoked an infinite loop because
+    the example's very first move _rather fortuitously_ is to the left.
+    So neither the boxes nor the robot moved.
