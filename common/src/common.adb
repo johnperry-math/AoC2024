@@ -16,7 +16,7 @@ package body Common is
 
    package body Two_Dimensional_Map_IO is
 
-      Start_Position : Map_Package.Location_Record;
+      Start_Position, End_Position : Map_Package.Location_Record;
 
       Map renames Map_Package.Map;
 
@@ -36,6 +36,10 @@ package body Common is
                     and then Line (Col) = Remember_Start.Symbol
                   then
                      Start_Position := (Row, Col);
+                  elsif Remember_End.Remember
+                    and then Line (Col) = Remember_End.Symbol
+                  then
+                     End_Position := (Row, Col);
                   else
                      Map (Row, Col) := Deserialize (Line (Col));
                   end if;
@@ -57,6 +61,9 @@ package body Common is
 
       function Start_Location return Map_Package.Location_Record
       is (Start_Position);
+
+      function End_Location return Map_Package.Location_Record
+      is (End_Position);
 
    end Two_Dimensional_Map_IO;
 

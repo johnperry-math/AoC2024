@@ -141,11 +141,27 @@ package Common is
       end case;
    end record;
 
+   No_Start : constant Remember_Start_Record := (Remember => False);
+
+   type Remember_End_Record (Remember : Boolean := False) is record
+      case Remember is
+         when True =>
+            Symbol : Character;
+
+         when False =>
+            null;
+      end case;
+   end record;
+
+   No_End : constant Remember_End_Record := (Remember => False);
+
    generic
 
       Doing_Example : Boolean := False;
 
-      Remember_Start : Remember_Start_Record;
+      Remember_Start : Remember_Start_Record := No_Start;
+
+      Remember_End : Remember_End_Record := No_End;
 
       with package Map_Package is new Two_Dimensional_Map (<>);
 
@@ -170,6 +186,7 @@ package Common is
       --  based on Serialize
 
       function Start_Location return Map_Package.Location_Record;
+      function End_Location return Map_Package.Location_Record;
 
    end Two_Dimensional_Map_IO;
 
