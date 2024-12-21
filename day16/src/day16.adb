@@ -78,14 +78,9 @@ procedure Day16 is
 
    package Path_Sorter is new Loc_And_Score_Vecs.Generic_Sorting;
 
-   function "<" (First, Second : Loc_And_Dir_Rec) return Boolean
-   is (First.Direction < Second.Direction
-       or else (First.Direction = Second.Direction
-                and then First.Location < Second.Location));
-
    package Loc_And_Dir_To_Scores is new
      Ada.Containers.Ordered_Maps
-       (Key_Type     => Loc_And_Dir_Rec,
+       (Key_Type     => Map_2D.Location_Record,
         Element_Type => Natural);
 
    procedure Enqueue_If_Legal_And_Optimal
@@ -98,13 +93,13 @@ procedure Day16 is
       if Map (Path.Last.Location.Row, Path.Last.Location.Col) = Wall then
          return;
       end if;
-      if Path_Scores.Contains (Path.Last) then
-         if Path_Scores (Path.Last) >= Path.Score then
-            Path_Scores.Replace (Path.Last, Path.Score);
+      if Path_Scores.Contains (Path.Last.Location) then
+         if Path_Scores (Path.Last.Location) >= Path.Score then
+            Path_Scores.Replace (Path.Last.Location, Path.Score);
             To_Do.Append (Path);
          end if;
       else
-         Path_Scores.Insert (Path.Last, Path.Score);
+         Path_Scores.Insert (Path.Last.Location, Path.Score);
          To_Do.Append (Path);
       end if;
    end Enqueue_If_Legal_And_Optimal;
