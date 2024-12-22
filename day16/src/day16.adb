@@ -4,6 +4,7 @@ with Ada.Text_IO;
 
 with Ada.Containers.Vectors;
 with Ada.Containers.Ordered_Maps;
+with Ada.Containers.Ordered_Sets;
 
 with Common;
 
@@ -26,6 +27,9 @@ procedure Day16 is
         Col_Length => Dimension,
         Object     => Object);
    use all type Map_2D.Location_Record;
+
+   package Location_Sets is new
+     Ada.Containers.Ordered_Sets (Element_Type => Map_2D.Location_Record);
 
    Invalid_Symbol : exception;
 
@@ -58,10 +62,22 @@ procedure Day16 is
       Direction : Motion_2D.Direction;
    end record;
 
+   package Location_Vecs is new
+     Ada.Containers.Vectors
+       (Index_Type   => Positive,
+        Element_Type => Map_2D.Location_Record);
+
    type Loc_Dir_Score_Rec is record
       Last  : Loc_And_Dir_Rec;
       Score : Natural;
+      Steps : Location_Vecs.Vector;
    end record;
+
+   overriding
+   function "=" (Left, Right : Loc_Dir_Score_Rec) return Boolean
+   is (Left.Score = Right.Score
+       and then Left.Last.Direction = Right.Last.Direction
+       and then Left.Last.Location = Right.Last.Location);
 
    function "<" (Left, Right : Loc_Dir_Score_Rec) return Boolean
    is (Left.Score < Right.Score
@@ -94,9 +110,12 @@ procedure Day16 is
          return;
       end if;
       if Path_Scores.Contains (Path.Last.Location) then
-         if Path_Scores (Path.Last.Location) >= Path.Score then
+         if Path_Scores (Path.Last.Location) >= Path.Score
+           or else Path_Scores (Path.Last.Location) = Path.Score - 1000
+         then
             Path_Scores.Replace (Path.Last.Location, Path.Score);
             To_Do.Append (Path);
+
          end if;
       else
          Path_Scores.Insert (Path.Last.Location, Path.Score);
@@ -104,8 +123,29 @@ procedure Day16 is
       end if;
    end Enqueue_If_Legal_And_Optimal;
 
-   procedure Part_1 is
-      Result : Natural := 0;
+   procedure Print_Map (Seats : Location_Sets.Set) is
+      Map renames Map_2D.Map;
+   begin
+      for Row in Map_2D.Row_Range loop
+         for Col in Map_2D.Col_Range loop
+            if Seats.Contains ((Row, Col)) then
+               IO.Put ('O');
+            else
+               IO.Put
+                 (case Map (Row, Col) is
+                    when Wall => '#',
+                    when Empty => '.',
+                    when Start => 'S',
+                    when Finish => 'E');
+            end if;
+         end loop;
+         IO.New_Line;
+      end loop;
+   end Print_Map;
+
+   procedure Parts_1_And_2 is
+      Winning_Score : Natural := Natural'Last;
+      Good_Seats    : Location_Sets.Set;
 
       To_Do         : Loc_And_Score_Vecs.Vector;
       Path_Scores   : Loc_And_Dir_To_Scores.Map;
@@ -116,12 +156,21 @@ procedure Day16 is
       To_Do.Append
         (Loc_Dir_Score_Rec'
            ((Location => Map_IO.Start_Location, Direction => East),
-            Score => 0));
+            Score => 0,
+            Steps => [Map_IO.Start_Location]));
       while not To_Do.Is_Empty loop
-         IO.Put_Line ("Considering" & To_Do.Length'Image & " paths");
+         IO.Put ("Considering" & To_Do.Length'Image & " paths:");
+         IO.New_Line;
          Curr := To_Do.First_Element;
-         Result := Curr.Score;
-         exit when Curr.Last.Location = Map_IO.End_Location;
+         exit when Curr.Score > Winning_Score;
+         if Curr.Last.Location = Map_IO.End_Location then
+            Winning_Score := Curr.Score;
+         end if;
+         if Curr.Score = Winning_Score then
+            for Location of Curr.Steps loop
+               Good_Seats.Include (Location);
+            end loop;
+         end if;
          Offset := Motion_2D.Deltas (Curr.Last.Direction);
          Next :=
            (
@@ -129,7 +178,9 @@ procedure Day16 is
                  (Curr.Last.Location.Row + Offset.DRow,
                   Curr.Last.Location.Col + Offset.DCol),
                Curr.Last.Direction),
-            Curr.Score + 1);
+            Curr.Score + 1,
+            Curr.Steps.Copy);
+         Next.Steps.Append (Next.Last.Location);
          Enqueue_If_Legal_And_Optimal (Next, To_Do, Path_Scores);
          for Dir in Motion_2D.Turn_Direction loop
             New_Direction := Motion_2D.Turn (Curr.Last.Direction, Dir);
@@ -140,17 +191,26 @@ procedure Day16 is
                     (Curr.Last.Location.Row + Offset.DRow,
                      Curr.Last.Location.Col + Offset.DCol),
                   New_Direction),
-               Curr.Score + 1001);
+               Curr.Score + 1001,
+               Curr.Steps.Copy);
+            Next.Steps.Append (Next.Last.Location);
             Enqueue_If_Legal_And_Optimal (Next, To_Do, Path_Scores);
          end loop;
          To_Do (To_Do.First_Index) := To_Do.Last_Element;
          To_Do.Delete_Last;
          Path_Sorter.Sort (To_Do);
       end loop;
-      IO.Put_Line ("the lowest-scoring path is" & Result'Image);
-   end Part_1;
+      --  Print_Map (Good_Seats);
+      IO.Put_Line
+        ("the lowest-scoring paths pass through"
+         & Winning_Score'Image
+         & " tiles");
+      IO.Put_Line
+        ("the number of seats available on those paths?"
+         & Good_Seats.Length'Image);
+   end Parts_1_And_2;
 
 begin
    Map_IO.Read_Input;
-   Part_1;
+   Parts_1_And_2;
 end Day16;
