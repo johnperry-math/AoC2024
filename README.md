@@ -25,6 +25,7 @@ other historians impress you into saving him.
   * 🕹️ [Day 13](#️-day-13-claw-contraption): Claw Contraption
   * 🚽 [Day 14](#-day-14-restroom-redoubt): Restroom Redoubt
   * 🤖 [Day 15](#-day-15-warehouse-woes): Warehouse Woes
+  * 🦌 [Day 16](#-day-16-reindeer-maze): Reindeer Maze
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -90,6 +91,22 @@ Each puzzle listed here also gives a reason for its being so listed.
   but multiple BFS (at least, that's how I did it).
   Without the wrinkle in Part 2, this would be in the lower category,
   but that wrinkle was non-trivial.
+
+* 🦌 [Day 16](#-day-16-reindeer-maze): Reindeer Maze
+
+  A lot of people are solving this with Dijkstra's Algorithm,
+  but I used BFS.
+  Already that gets you into "needing a little more thought," but
+  the scoring is a bit funny, so your queue needs to be a little smarter
+  than a dumb queue, and alas, Ada's standard library provides only dumb queues.
+  (Maybe priority queues will work, but I had issues with them in the past.)
+  So I implemented a queue using a vector that I sort after each iteration.
+  I should have implemented a property queue, but... oh, well.
+  
+  To top that off, Part 2 decides that you need to find
+  _all_ the lowest-scoring paths.
+  That's not so hard by itself, but it cranks up the solution time,
+  at least using my terrible, self-implemented queue.
 
 ### 😱 Great puzzles that are jes' plain ornery
 
@@ -560,3 +577,30 @@ Bug fixing was quick and easy:
     when moving boxes and the robot. This provoked an infinite loop because
     the example's very first move _rather fortuitously_ is to the left.
     So neither the boxes nor the robot moved.
+
+### 🦌 Day 16: Reindeer Maze
+
+If you'd participated in the 2015 Advent of Code,
+then you'd know that reindeer have Olympics.
+
+(I didn't know. You infer correctly about AoC 2015.)
+
+The historians think their missing colleague might be here,
+so they bring you here, as well.
+You want to watch the Reindeer Maze event,
+which is sort of like golf in that reindeers aim for the lowest score.
+In part 1, you determine what that score is.
+In part 2, you determine how many seats there are along any path
+that has the lowest score.
+
+#### Unusual Tools
+
+I had to update the `Common` crate again,
+this time to detect a maze's end location.
+
+#### Experience
+
+Fun, and not entirely easy. I solved it using BFS.
+I'm annoyed that I can't get Part 2 to run faster.
+I mean, I _probably_ could, but I'm not willing to think about it
+any more than I have.

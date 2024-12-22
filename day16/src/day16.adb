@@ -143,35 +143,81 @@ procedure Day16 is
       end loop;
    end Print_Map;
 
+   procedure Advance_Straight (Path : in out Loc_Dir_Score_Rec) is
+      Map renames Map_2D.Map;
+
+      Offset : constant Motion_2D.Drc :=
+        Motion_2D.Deltas (Path.Last.Direction);
+      Next   : Map_2D.Location_Record := Path.Last.Location;
+
+      New_Offset       : Motion_2D.Drc;
+      Hit_Intersection : Boolean := False;
+   begin
+      loop
+         Next := (Next.Row + Offset.DRow, Next.Col + Offset.DCol);
+         exit when Map (Next.Row, Next.Col) = Wall;
+         for Turn_Dir in Motion_2D.Turn_Direction when not Hit_Intersection
+         loop
+            New_Offset :=
+              Motion_2D.Deltas
+                (Motion_2D.Turn (Path.Last.Direction, Turn_Dir));
+            if Map (Next.Row + New_Offset.DRow, Next.Col + New_Offset.DCol)
+              /= Wall
+            then
+               Hit_Intersection := True;
+            end if;
+         end loop;
+         Path.Last.Location := Next;
+         Path.Steps.Append (Next);
+         Path.Score := @ + 1;
+         exit when Hit_Intersection;
+      end loop;
+   end Advance_Straight;
+
    procedure Parts_1_And_2 is
-      Winning_Score : Natural := Natural'Last;
-      Good_Seats    : Location_Sets.Set;
+      Winning_Score           : Natural := Natural'Last;
+      Good_Seats, First_Seats : Location_Sets.Set;
 
       To_Do         : Loc_And_Score_Vecs.Vector;
       Path_Scores   : Loc_And_Dir_To_Scores.Map;
       Curr, Next    : Loc_Dir_Score_Rec;
       Offset        : Motion_2D.Drc;
       New_Direction : Motion_2D.Direction;
+
    begin
+      if not Doing_Example then
+         To_Do.Append
+           (Loc_Dir_Score_Rec'
+              ((Location => Map_IO.Start_Location, Direction => East),
+               Score => 0,
+               Steps => [Map_IO.Start_Location]));
+      end if;
       To_Do.Append
         (Loc_Dir_Score_Rec'
-           ((Location => Map_IO.Start_Location, Direction => East),
-            Score => 0,
-            Steps => [Map_IO.Start_Location]));
+           (Last  =>
+              Loc_And_Dir_Rec'
+                (Location  =>
+                   (Map_IO.Start_Location.Row - 1, Map_IO.Start_Location.Col),
+                 Direction => North),
+            Score => 1001,
+            Steps =>
+              [Map_IO.Start_Location,
+               (Map_IO.Start_Location.Row - 1, Map_IO.Start_Location.Col)]));
       while not To_Do.Is_Empty loop
-         IO.Put ("Considering" & To_Do.Length'Image & " paths:");
-         IO.New_Line;
+         IO.Put_Line ("Considering" & To_Do.Length'Image & " paths");
          Curr := To_Do.First_Element;
          exit when Curr.Score > Winning_Score;
+         Offset := Motion_2D.Deltas (Curr.Last.Direction);
+         Advance_Straight (Curr);
          if Curr.Last.Location = Map_IO.End_Location then
-            Winning_Score := Curr.Score;
-         end if;
-         if Curr.Score = Winning_Score then
             for Location of Curr.Steps loop
                Good_Seats.Include (Location);
+               if Winning_Score = Natural'Last then
+                  First_Seats.Include (Location);
+               end if;
             end loop;
+            Winning_Score := Curr.Score;
          end if;
-         Offset := Motion_2D.Deltas (Curr.Last.Direction);
          Next :=
            (
               (
@@ -200,7 +246,8 @@ procedure Day16 is
          To_Do.Delete_Last;
          Path_Sorter.Sort (To_Do);
       end loop;
-      --  Print_Map (Good_Seats);
+      Print_Map (First_Seats);
+      Print_Map (Good_Seats);
       IO.Put_Line
         ("the lowest-scoring paths pass through"
          & Winning_Score'Image
