@@ -26,6 +26,7 @@ other historians impress you into saving him.
   * 🚽 [Day 14](#-day-14-restroom-redoubt): Restroom Redoubt
   * 🤖 [Day 15](#-day-15-warehouse-woes): Warehouse Woes
   * 🦌 [Day 16](#-day-16-reindeer-maze): Reindeer Maze
+  * 💻 [Day 17](#-day-17-chronospatial-computer): Chronospatial Computer
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -81,6 +82,13 @@ Each puzzle listed here also gives a reason for its being so listed.
   
   It isn't clear what the Christmas tree should look like,
   but once you know, this actually becomes quite easy.
+* 💻 [Day 17](#-day-17-chronospatial-computer): Chronospatial Computer
+
+  Part 1 is almost trivial.
+  Part 2 requires you to figure out which input produces a given output.
+  Those always require at least a little thought.
+  It's almost obvious once you have it,
+  but until you have it, it can be maddening.
 
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
@@ -604,3 +612,37 @@ Fun, and not entirely easy. I solved it using BFS.
 I'm annoyed that I can't get Part 2 to run faster.
 I mean, I _probably_ could, but I'm not willing to think about it
 any more than I have.
+
+### 💻 Day 17: Chronospatial Computer
+
+You're falling, much as you were way back on one day of the 2018 Advent of Code.
+The historians' device has failed. You need to debug it.
+It realies on a strange machine code.
+In part 1, you test what the output is when Register A has a certain value.
+In part 2, you find the correct input that outputs the program itself!
+
+#### Unusual Tools
+
+Nothing in particular.
+
+#### Experience
+
+Part 1 is nearly trivial.
+Part 2 is delightful! but tough.
+My approach was to reverse-engineer the solution.
+(The following may depend on your input.)
+1. You know the program terminates, and that can happen only
+   when the instruction pointer has moved beyond the program,
+   which happens only when register A contains 0
+   (i.e., the final instruction, a `JNZ`, does not in fact jump).
+2. For any given value of A at the start of a program,
+   the program replaces it by its quotient after dividing by 8.
+   (Mine did, in any case.)
+   Thus, the previous iteration can come from only one of 8 values:
+   (current A) * 8, (current A) * 8 + 1, (current A) * 8 + 2, ...
+   (current A) * 8 + 7.
+3. Try each of those 8 values in the program,
+   keeping the ones that output its last _x_ digits.
+   Apply the principle of bullet 2 to obtain 8 more candidates
+   and run them through the program,
+   quitting when you find an input that outputs the program itself.
