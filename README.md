@@ -27,6 +27,7 @@ other historians impress you into saving him.
   * 🤖 [Day 15](#-day-15-warehouse-woes): Warehouse Woes
   * 🦌 [Day 16](#-day-16-reindeer-maze): Reindeer Maze
   * 💻 [Day 17](#-day-17-chronospatial-computer): Chronospatial Computer
+  * 🪨 [Day 18](#-day-18-ram-run): RAM Run
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -89,6 +90,12 @@ Each puzzle listed here also gives a reason for its being so listed.
   Those always require at least a little thought.
   It's almost obvious once you have it,
   but until you have it, it can be maddening.
+* 🪨 [Day 18](#-day-18-ram-run): RAM Run
+
+  Part 1 is more or less a straightforward BFS.
+  Part 2 can be solved using a repeated BFS as you drop more bytes,
+  and can be solved _fastaer_ using a technique a la
+  [Method of Bisection](en.wikipedia.org/wiki/Bisection_method).
 
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
@@ -646,3 +653,29 @@ My approach was to reverse-engineer the solution.
    Apply the principle of bullet 2 to obtain 8 more candidates
    and run them through the program,
    quitting when you find an input that outputs the program itself.
+
+### 🪨 Day 18: RAM Run
+
+You're trapped inside a computer,
+just as you were back in the 2017 Advent of Code.
+A program runs up to you and tells you to run lest a user dropping bytes
+all over RAM drop one on you and squash you.
+
+(Sad but true: when pixelated, I fit within a 1x1 block of RAM.)
+
+In part 1, you find a path from the start to the end
+after the user has dropped 1024 bytes.
+In part 2, you determine which bytes the user drops that cuts off the path.
+
+#### Unusual tools
+
+* I updated the `Common` crate to allow it to handle two-dimensional maps
+  whose first index is other than 1.
+* When revising the solution to improve its speed,
+  I employed the [Method of Bisection](en.wikipedia.org/wiki/Bisection_method).
+  Calculus-inspired ideas for the win!
+
+#### Experience
+
+Fun! and mostly easy. Devising the algorithm to solve the puzzle wasn't hard,
+but I made a few dumb mistakes along the way.
