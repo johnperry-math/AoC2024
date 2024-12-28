@@ -90,6 +90,7 @@ package Common is
 
    generic
 
+      Row_Start, Col_Start : Natural := 1;
       Row_Length, Col_Length : Positive;
 
       type Object is private;
@@ -100,8 +101,10 @@ package Common is
       --  @summary
       --  support for a two-dimensional, non-square map
 
-      subtype Row_Range is Natural range 1 .. Row_Length;
-      subtype Col_Range is Natural range 1 .. Col_Length;
+      subtype Row_Range is
+        Natural range Row_Start .. Row_Length + Row_Start - 1;
+      subtype Col_Range is
+        Natural range Col_Start .. Col_Length + Col_Start - 1;
 
       type Location_Record is record
          --  a location in the map
@@ -128,6 +131,17 @@ package Common is
 
       package Location_Sets is new
         Ada.Containers.Ordered_Sets (Element_Type => Location_Record);
+
+      function Can_Move
+        (Location : Location_Record; Offset : Two_Dimensional_Motion.Drc)
+         return Boolean
+      is (Location.Row + Offset.DRow in Row_Range
+          and then Location.Col + Offset.DCol in Col_Range);
+
+      function "+"
+        (Location : Location_Record; Offset : Two_Dimensional_Motion.Drc)
+         return Location_Record
+      is (Location.Row + Offset.DRow, Location.Col + Offset.DCol);
 
    end Two_Dimensional_Map;
 
