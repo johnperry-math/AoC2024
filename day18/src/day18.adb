@@ -131,21 +131,31 @@ procedure Day18 is
    end Part_1;
 
    procedure Part_2 is
-      Arrival    : Path_Record;
-      Next_Block : Location_Record := (0, 0);
-
+      Arrival      : Path_Record;
+      Last_Success : Positive := (if Doing_Example then 12 else 1024);
+      Last_Failure : Positive := Byte_Positions.Last_Index;
+      Test_Value   : Positive;
+      Old_Blocked  : Memory_Map.Map_Array := [others => [others => False]];
+      Next_Block   : Location_Record;
    begin
-      for Ith
-        in (if Doing_Example then 13 else 1025) .. Byte_Positions.Last_Index
-      loop
-         Next_Block := Byte_Positions (Ith);
-         Blocked (Next_Block.Row, Next_Block.Col) := True;
+      while Last_Success < Last_Failure - 1 loop
+         Test_Value := (Last_Success + Last_Failure) / 2;
+         Blocked := Old_Blocked;
+         for Ith in 1 .. Test_Value loop
+            Next_Block := Byte_Positions (Ith);
+            Blocked (Next_Block.Row, Next_Block.Col) := True;
+         end loop;
          Arrival := Search_For_Exit;
-         exit when Arrival.Location /= Goal;
+         if Arrival.Location = Goal then
+            Last_Success := Test_Value;
+         else
+            Last_Failure := Test_Value;
+         end if;
       end loop;
       if Arrival.Location /= Goal then
+         Next_Block := Byte_Positions (Last_Failure);
          IO.Put_Line
-           ("The path is block once the byte at"
+           ("The path is blocked once the byte at"
             & Next_Block.Col'Image
             & ","
             & Next_Block.Row'Image
