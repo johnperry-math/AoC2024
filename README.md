@@ -28,6 +28,7 @@ other historians impress you into saving him.
   * 🦌 [Day 16](#-day-16-reindeer-maze): Reindeer Maze
   * 💻 [Day 17](#-day-17-chronospatial-computer): Chronospatial Computer
   * 🪨 [Day 18](#-day-18-ram-run): RAM Run
+  * ♨️ [Day 19](#️-day-19-linen-layout): Linen Layout
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -122,6 +123,19 @@ Each puzzle listed here also gives a reason for its being so listed.
   _all_ the lowest-scoring paths.
   That's not so hard by itself, but it cranks up the solution time,
   at least using my terrible, self-implemented queue.
+
+* ♨️ [Day 19](#️-day-19-linen-layout): Linen Layout
+
+  Essentially you're building a parser,
+  but the straightforward recursive descent parser
+  chokes on the potential branches _from the very first "word"!_
+  So you already have to find a better approach in Part 1,
+  which "merely" asks you to determine which "words" parse.
+  and Part 2 dials it up to 11 by asking you to determine
+  _how many ways_ there are to parse it,
+  and of course that number is larger than Ada's `Natural` type,
+  and _of course_ no attempt at recursion seems feasible.
+  So... think backwards!
 
 ### 😱 Great puzzles that are jes' plain ornery
 
@@ -674,8 +688,66 @@ In part 2, you determine which bytes the user drops that cuts off the path.
 * When revising the solution to improve its speed,
   I employed the [Method of Bisection](en.wikipedia.org/wiki/Bisection_method).
   Calculus-inspired ideas for the win!
+* This is one of those rare puzzles where I can solve both parts in one go.
 
 #### Experience
 
 Fun! and mostly easy. Devising the algorithm to solve the puzzle wasn't hard,
 but I made a few dumb mistakes along the way.
+
+### ♨️ Day 19: Linen Layout
+
+You're back at Gear Island's hot springs, from the 2023 Advent of Code.
+You want to get into a ~~hot spring~~ <insert fancy Japanese word for "hot spring">
+but you don't have the right coinage.
+The local elves agree to let you in
+so long as you help them decide which towel layouts are a good idea.
+In part 1, you determine which designs are possible.
+In part 2, you sum the number of ways to arrange each possible design.
+
+#### Unusual tools
+
+* Another one of those rare puzzles where I figure out
+  how to solve both parts in one go.
+* Thinking backwards.
+
+#### Experience
+
+I had a lot of fun, but this one was pretty tough.
+Essentially you're building a parser,
+but the straightforward recursive-descent parser
+chokes right away on the puzzle input:
+while my first solution for both parts
+solved the example without breaking a sweat,
+it couldn't handle the first towel design _even after several minutes_.
+
+Eventually I realized you could solve this quickly by "thinking backwards":
+rather than parse it recursively,
+count how many matches there as you move from back to front.
+Take care to account for all sub-matches that apply to each match.
+
+To see what I mean, consider one of the examples, `rrbgbr`.
+(In what follows, `_` indicates "fill in the blank with anything that matches.")
+* At position 6, you can match only on `r`, giving **1 match**.
+* At position 5,
+  * you can match on `b_`, giving _1 match_, and
+  * you can match on `br`, giving _1 match_,
+
+  for a total of **2 matches**.
+* At position 4,
+  * you can match on `g__`, giving _2 matches_ (the two from position 5!), and
+  * you can match on `gb_`, giving _1 match_ (the 1 from position 6!),
+
+  for a total of **3 matches**.
+* At position 3, you can match only `b___`, giving 3 matches (the 3 from position 4!).
+* At position 2,
+  * you can match on `r____`, giving _3 matches_ (the 3 from position 3!), and
+  * you can match on `rb___`, giving _3 matches_ (the 3 from position 4!),
+
+  for a total of **6 matches**.
+* At position 1, you can match only `r_____`, giving **6 matches** (the 6 from position 2!).
+
+Altogether you have 6 matches, as indicated by the puzzle description.
+
+This approach is _faaaast_, and works for both parts,
+so it replaced my initial solution to Part 1.
