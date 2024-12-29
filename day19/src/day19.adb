@@ -140,12 +140,8 @@ procedure Day19 is
       return Results (Design.First_Index);
    end Arrangements;
 
-   function Is_Trivial (Design : Pattern_Vector) return Boolean
-   is (for all Element of Design => Appears_Singly (Element));
-
    procedure Prune is
-      Pruned_Patterns : Pattern_List;
-      Empty           : Pattern_List;
+      Empty : Pattern_List;
    begin
       for Color in Color_Variant loop
          Redirects.Insert (Color, Empty.Copy);
@@ -157,35 +153,7 @@ procedure Day19 is
       end loop;
       for Pattern of Patterns_Possible loop
          Redirects (Pattern (1)).Append (Pattern);
-         if Natural (Pattern.Length) = 1 or else (not Is_Trivial (Pattern))
-         then
-            Pruned_Patterns.Append (Pattern);
-         end if;
       end loop;
-      Patterns_Possible := Pruned_Patterns.Copy;
-      for Ith
-        in reverse Pruned_Patterns.First_Index .. Pruned_Patterns.Last_Index
-      loop
-         Patterns_Possible.Delete (Ith);
-         if Arrangements (Pruned_Patterns (Ith)) = 0 then
-            Patterns_Possible.Insert (Ith, Pruned_Patterns (Ith));
-         end if;
-      end loop;
-      if Debug then
-         for Color in Color_Variant loop
-            Color_IO.Put (Color, Set => IO.Lower_Case);
-            IO.Put_Line
-              (" has" & Redirects (Color).Length'Image & " redirects");
-         end loop;
-         declare
-            Total : Natural := 0;
-         begin
-            for Color in Color_Variant loop
-               Total := @ + Natural (Redirects (Color).Length);
-            end loop;
-            IO.Put_Line ("altogether there are" & Total'Image & " patterns");
-         end;
-      end if;
    end Prune;
 
    procedure Both_Parts is
