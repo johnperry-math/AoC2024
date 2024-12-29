@@ -2,8 +2,7 @@ pragma Ada_2022;
 
 with Ada.Text_IO;
 
-with Ada.Containers.Synchronized_Queue_Interfaces;
-with Ada.Containers.Unbounded_Synchronized_Queues;
+with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
 
 procedure Day19 is
@@ -11,6 +10,7 @@ procedure Day19 is
    package IO renames Ada.Text_IO;
 
    Doing_Example : constant Boolean := False;
+   Debug         : constant Boolean := False;
 
    type Color_Variant is (White, Blue, Black, Red, Green);
    package Color_IO is new IO.Enumeration_IO (Enum => Color_Variant);
@@ -53,6 +53,18 @@ procedure Day19 is
 
    Patterns_Possible, Designs_Desired : Pattern_List;
 
+   function "=" (Left, Right : Pattern_List) return Boolean
+   is (Natural (Left.Length) = Natural (Right.Length)
+       and then (for all Ith in Left.First_Index .. Left.Last_Index
+                 => Left (Ith) = Right (Ith)));
+
+   package Redirect_Maps is new
+     Ada.Containers.Ordered_Maps
+       (Key_Type     => Color_Variant,
+        Element_Type => Pattern_List);
+
+   Redirects : Redirect_Maps.Map;
+
    function Get
      (Line : String; Position : in out Positive) return Pattern_Vector
    is
@@ -93,10 +105,11 @@ procedure Day19 is
       IO.Close (Input);
    end Read_Input;
 
-   procedure Put (Pattern : Pattern_Vector) is
+   pragma Warnings (Off, "procedure ""Put"" is not referenced");
+   procedure Put (Pattern : Pattern_Vector; Position : Positive := 1) is
    begin
-      for Element of Pattern loop
-         IO.Put (Serialize (Element));
+      for Ith in Position .. Pattern.Last_Index loop
+         IO.Put (Serialize (Pattern (Ith)));
       end loop;
    end Put;
 
@@ -107,84 +120,43 @@ procedure Day19 is
        and then (for all Ith in Right.First_Index .. Right.Last_Index
                  => Left (Position + Ith - Right.First_Index) = Right (Ith)));
 
-   type Pattern_Record is record
-      Candidate : Pattern_Vector;
-      Position  : Positive;
-   end record;
-
-   package Parse_Q_Interfaces is new
-     Ada.Containers.Synchronized_Queue_Interfaces
-       (Element_Type => Pattern_Record);
-
-   package Parse_Qs is new
-     Ada.Containers.Unbounded_Synchronized_Queues
-       (Queue_Interfaces => Parse_Q_Interfaces);
-
-   function Parses
-     (Design : Pattern_Vector; Position : Positive := 1) return Boolean is
-   begin
-      if Position > Design.Last_Index then
-         return True;
-      end if;
-      for Pattern of Patterns_Possible loop
-         if Matches (Design, Position, Pattern) then
-            if Parses (Design, Position + Natural (Pattern.Length)) then
-               return True;
-            end if;
-         end if;
-      end loop;
-      return False;
-   end Parses;
-
-   procedure Input_Comparison is
-   begin
-      IO.Put_Line ("Patterns possible:");
-      for Pattern of Patterns_Possible loop
-         IO.Put ("   ");
-         Put (Pattern);
-         IO.New_Line;
-      end loop;
-      IO.Put_Line ("Designs desired:");
-      for Design of Designs_Desired loop
-         IO.Put ("   ");
-         Put (Design);
-         IO.New_Line;
-      end loop;
-   end Input_Comparison;
-
-   procedure Match_Test is
-   begin
-      if Matches (Designs_Desired (1), 3, Patterns_Possible (2)) then
-         IO.Put_Line ("OK");
-      else
-         IO.Put_Line ("NOK");
-      end if;
-      if Matches (Designs_Desired (6), 3, Patterns_Possible (8)) then
-         IO.Put_Line ("NOK");
-      else
-         IO.Put_Line ("OK");
-      end if;
-      if Matches (Designs_Desired (6), 6, Patterns_Possible (6)) then
-         IO.Put_Line ("NOK");
-      else
-         IO.Put_Line ("OK");
-      end if;
-   end Match_Test;
-
    Appears_Singly : array (Color_Variant) of Boolean := [others => False];
+
+   type Value is range 0 .. 2 ** 64 - 1;
+
+   function Arrangements (Design : Pattern_Vector) return Value is
+      Results : array (Design.First_Index .. Design.Last_Index + 1) of Value :=
+        [others => 0];
+   begin
+      Results (Design.Last_Index + 1) := 1;
+      for Ith in reverse Design.First_Index .. Design.Last_Index loop
+         for Pattern
+           of Redirects (Design (Ith))
+           when Matches (Design, Ith, Pattern)
+         loop
+            Results (Ith) := @ + Results (Ith + Natural (Pattern.Length));
+         end loop;
+      end loop;
+      return Results (Design.First_Index);
+   end Arrangements;
 
    function Is_Trivial (Design : Pattern_Vector) return Boolean
    is (for all Element of Design => Appears_Singly (Element));
 
    procedure Prune is
       Pruned_Patterns : Pattern_List;
+      Empty           : Pattern_List;
    begin
+      for Color in Color_Variant loop
+         Redirects.Insert (Color, Empty.Copy);
+      end loop;
       for Pattern of Patterns_Possible loop
          if Natural (Pattern.Length) = 1 then
             Appears_Singly (Pattern (Pattern.First_Index)) := True;
          end if;
       end loop;
       for Pattern of Patterns_Possible loop
+         Redirects (Pattern (1)).Append (Pattern);
          if Natural (Pattern.Length) = 1 or else (not Is_Trivial (Pattern))
          then
             Pruned_Patterns.Append (Pattern);
@@ -195,45 +167,57 @@ procedure Day19 is
         in reverse Pruned_Patterns.First_Index .. Pruned_Patterns.Last_Index
       loop
          Patterns_Possible.Delete (Ith);
-         if not Parses
-                  (Pruned_Patterns (Ith), Pruned_Patterns (Ith).First_Index)
-         then
+         if Arrangements (Pruned_Patterns (Ith)) = 0 then
             Patterns_Possible.Insert (Ith, Pruned_Patterns (Ith));
          end if;
       end loop;
+      if Debug then
+         for Color in Color_Variant loop
+            Color_IO.Put (Color, Set => IO.Lower_Case);
+            IO.Put_Line
+              (" has" & Redirects (Color).Length'Image & " redirects");
+         end loop;
+         declare
+            Total : Natural := 0;
+         begin
+            for Color in Color_Variant loop
+               Total := @ + Natural (Redirects (Color).Length);
+            end loop;
+            IO.Put_Line ("altogether there are" & Total'Image & " patterns");
+         end;
+      end if;
    end Prune;
 
-   procedure Part_1 is
-      Result : Natural := 0;
-      Ith    : Natural := 0;
+   procedure Both_Parts is
+      Part_1 : Natural := 0;
+      Part_2 : Value := 0;
    begin
       for Design of Designs_Desired loop
-         Ith := @ + 1;
-         IO.Put_Line ("checking design" & Ith'Image);
-         if Parses (Design, Design.First_Index) then
-            Result := @ + 1;
-         end if;
+         declare
+            My_Arrangements : constant Value := Arrangements (Design);
+         begin
+            if My_Arrangements > Value (0) then
+               Part_1 := @ + 1;
+               Part_2 := @ + My_Arrangements;
+            end if;
+         end;
       end loop;
-      IO.Put_Line ("There are" & Result'Image & " satisfactory designs");
-   end Part_1;
+      IO.Put_Line ("There are" & Part_1'Image & " satisfactory designs");
+      IO.Put_Line ("There are" & Part_2'Image & " ways to arrange them");
+   end Both_Parts;
 
 begin
    Read_Input;
    Prune;
-   IO.Put ("The only colors not available are ");
-   for Color in Color_Variant loop
-      if not Appears_Singly (Color) then
-         Color_IO.Put (Color, Set => IO.Lower_Case);
-         IO.Put (" ");
-      end if;
-   end loop;
+   if Debug then
+      IO.Put ("The only color(s) not available singly? ");
+      for Color in Color_Variant loop
+         if not Appears_Singly (Color) then
+            Color_IO.Put (Color, Set => IO.Lower_Case);
+            IO.Put (" ");
+         end if;
+      end loop;
+   end if;
    IO.New_Line;
-   IO.Put_Line
-     ("After pruning," & Patterns_Possible.Length'Image & " patterns");
-   for Pattern of Patterns_Possible loop
-      IO.Put ("   ");
-      Put (Pattern);
-      IO.New_Line;
-   end loop;
-   Part_1;
+   Both_Parts;
 end Day19;
