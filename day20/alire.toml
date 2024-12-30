@@ -1,0 +1,16 @@
+name = "day20"
+description = "2024 advent of code day 20"
+version = "0.1.0-dev"
+
+authors = ["John Perry"]
+maintainers = ["John Perry <devotus@yahoo.com>"]
+maintainers-logins = ["johnperry-math"]
+licenses = "CC-BY-SA-4.0"
+website = ""
+tags = []
+
+[[depends-on]]
+common = "~0.1.0-dev"
+
+[[pins]]
+common = { path='../common' }
