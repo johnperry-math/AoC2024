@@ -246,8 +246,8 @@ procedure Day16 is
          To_Do.Delete_Last;
          Path_Sorter.Sort (To_Do);
       end loop;
-      Print_Map (First_Seats);
-      Print_Map (Good_Seats);
+      --  Print_Map (First_Seats);
+      --  Print_Map (Good_Seats);
       IO.Put_Line
         ("the lowest-scoring paths pass through"
          & Winning_Score'Image

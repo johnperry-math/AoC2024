@@ -243,14 +243,6 @@ procedure Day13 is
          if First_Rem = 0 and then Second_Rem = 0 then
             Sol := (First_Quo, Second_Quo);
             Result := @ + Cost (Sol);
-            IO.Put_Line
-              ("Solvable with"
-               & Value'Image (Cost (Sol))
-               & " at"
-               & Sol.X'Image
-               & Sol.Y'Image);
-         else
-            IO.Put_Line ("Not solvable");
          end if;
       end loop;
       IO.Put_Line ("The cost to win all possible prizes is" & Result'Image);

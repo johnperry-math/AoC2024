@@ -121,7 +121,7 @@ procedure Day08 is
 
    procedure Part_2 is
       package Integer_Math is new
-        Common.Mathematics (Base_Type => Integer, Zero => 0);
+        Common.Mathematics (Base_Type => Integer, One => 1, Zero => 0);
       List               : Locations_Array;
       Antinode_Locations : Node_Sets.Set;
    begin

@@ -368,6 +368,6 @@ begin
    Read_Input;
    Part_1;
    Widen_Map;
-   Draw_Wider_Map (Wider_Start);
+   --  Draw_Wider_Map (Wider_Start);
    Part_2;
 end Day15;
