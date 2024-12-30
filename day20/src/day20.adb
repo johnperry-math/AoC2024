@@ -128,43 +128,90 @@ procedure Day20 is
        and then Location.Col in Play_Range
        and then Map (Location.Row, Location.Col) /= Wall);
 
-   procedure Part_1 is
-      Curr, Ingress, Egress : Location_Record;
+   function Distance (Start, Finish : Location_Record) return Natural
+   is (abs (Start.Row - Finish.Row) + abs (Start.Col - Finish.Col));
 
-      Length : Natural;
-      Result : Natural := 0;
+   procedure Solve_By_Cheating (Longest_Cheat : Natural := 2) is
+      Ingress, Egress : Location_Record;
+
+      type Cheat_Record is record
+         Ingress, Egress : Location_Record;
+         Path_Length     : Natural;
+      end record;
+
+      overriding
+      function "=" (Left, Right : Cheat_Record) return Boolean
+      is (Left.Ingress = Right.Ingress and then Left.Egress = Right.Egress);
+
+      function "<" (Left, Right : Cheat_Record) return Boolean
+      is (Left.Ingress < Right.Ingress
+          or else (Left.Ingress = Right.Ingress
+                   and then Left.Egress < Right.Egress));
+
+      function New_Cheat
+        (Ingress, Egress : Location_Record; Path_Length : Natural)
+         return Cheat_Record
+      is (((if Ingress < Egress then Ingress else Egress),
+           (if Ingress < Egress then Egress else Ingress),
+           Path_Length));
+
+      package Cheat_Sets is new
+        Ada.Containers.Ordered_Sets (Element_Type => Cheat_Record);
+
+      Cheats : Cheat_Sets.Set;
    begin
       for Row in Play_Range loop
-         for Col in Play_Range loop
-            Curr := (Row, Col);
-            if Map (Row, Col) = Wall then
-               Length := Natural'Last;
-               for Entry_Dir in Direction loop
-                  Ingress := Curr + Offset (Entry_Dir);
-                  if Can_Cheat_At (Ingress) then
-                     for Exit_Dir in Direction when Exit_Dir /= Entry_Dir loop
-                        Egress := Curr + Offset (Exit_Dir);
-                        if Can_Cheat_At (Egress) then
-                           Length :=
-                             Natural'Min
-                               (Length,
-                                Steps_From_Start (Ingress.Row, Ingress.Col)
-                                + Steps_To_Finish (Egress.Row, Egress.Col)
-                                + 2);
-                        end if;
-                     end loop;
+         for Col in Play_Range when Map (Row, Col) /= Wall loop
+            Ingress := (Row, Col);
+            for Row_Offset
+              in -Longest_Cheat .. Longest_Cheat
+              when Row + Row_Offset in Play_Range
+            loop
+               for Col_Offset
+                 in -Longest_Cheat .. Longest_Cheat
+                 when abs (Col_Offset) + abs (Row_Offset) in 1 .. Longest_Cheat
+                 and then Col + Col_Offset in Play_Range
+               loop
+                  Egress :=
+                    (Ingress.Row + Row_Offset, Ingress.Col + Col_Offset);
+                  if Map (Egress.Row, Egress.Col) /= Wall then
+                     if Steps_From_Start (Ingress.Row, Ingress.Col)
+                       + Steps_To_Finish (Egress.Row, Egress.Col)
+                       + Distance (Ingress, Egress)
+                       < (if Doing_Example then Baseline else Baseline - 99)
+                     then
+                        Cheats.Include
+                          (New_Cheat
+                             (Ingress,
+                              Egress,
+                              Baseline
+                              - (Steps_From_Start (Ingress.Row, Ingress.Col)
+                                 + Steps_To_Finish (Egress.Row, Egress.Col)
+                                 + Distance (Ingress, Egress))));
+                     end if;
                   end if;
                end loop;
-               if Length < Baseline then
-                  if Length <= Baseline - 100 then
-                     Result := @ + 1;
-                  end if;
-               end if;
-            end if;
+            end loop;
          end loop;
       end loop;
-      IO.Put_Line (Result'Image & " cheats save at least 100 picoseconds");
-   end Part_1;
+      IO.Put_Line
+        ("found"
+         & Cheats.Length'Image
+         & " cheats of max length"
+         & Longest_Cheat'Image);
+      if Doing_Example then
+         for Cheat of Cheats loop
+            IO.Put_Line
+              (Cheat.Ingress.Row'Image
+               & Cheat.Ingress.Col'Image
+               & " ->"
+               & Cheat.Egress.Row'Image
+               & Cheat.Egress.Col'Image
+               & ":"
+               & Cheat.Path_Length'Image);
+         end loop;
+      end if;
+   end Solve_By_Cheating;
 
 begin
    Map_IO.Read_Input;
@@ -172,5 +219,6 @@ begin
    Map_2D.Map (Map_IO.End_Location.Row, Map_IO.End_Location.Col) := Empty;
    Solve;
    IO.Put_Line ("The baseline is" & Baseline'Image);
-   Part_1;
+   Solve_By_Cheating;
+   Solve_By_Cheating (20);
 end Day20;
