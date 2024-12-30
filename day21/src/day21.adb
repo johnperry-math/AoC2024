@@ -2,6 +2,7 @@ pragma Ada_2022;
 
 with Ada.Text_IO;
 
+with Ada.Containers.Ordered_Maps;
 with Ada.Containers.Vectors;
 
 procedure Day21 is
@@ -17,8 +18,6 @@ procedure Day21 is
       Row : Door_Rows;
       Col : Door_Cols;
    end record;
-
-   Invalid_Door_Location : constant Door_Record := (4, 1);
 
    type Door_Key is
      (Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Door_A);
@@ -85,8 +84,6 @@ procedure Day21 is
       Row : Direction_Rows;
       Col : Direction_Cols;
    end record;
-
-   Invalid_Direction_Location : constant Direction_Record := (1, 1);
 
    Direction_Key_Positions :
      constant array (Direction_Key) of Direction_Record :=
@@ -210,10 +207,7 @@ procedure Day21 is
    procedure Move_Dirbot
      (Start   : Direction_Key;
       Motion  : Keypad_Motion;
-      Motions : in out Motion_Vector)
-   is
-      --  Start_Position : constant Direction_Record :=
-      --    Direction_Key_Positions (Start);
+      Motions : in out Motion_Vector) is
    begin
       if Motion.DCol < 0 then
          --  moving left
@@ -263,62 +257,147 @@ procedure Day21 is
       end if;
    end Move_Dirbot;
 
-   procedure Part_1 is
-      Dirbot_1, Dirbot_2, Mebot : Motion_Vector;
-      Curr_Doorbot              : Door_Key;
-      Curr_Dirbot               : Direction_Key;
-      Motion                    : Keypad_Motion;
-      Result                    : Natural := 0;
+   function "<" (Left, Right : Motion_Vector) return Boolean is
+   begin
+      if Natural (Left.Length) < Natural (Right.Length) then
+         return True;
+      elsif Natural (Left.Length) > Natural (Right.Length) then
+         return False;
+      else
+         for Ith in Left.First_Index .. Left.Last_Index loop
+            if Left (Ith) < Right (Ith) then
+               return True;
+            elsif Left (Ith) > Right (Ith) then
+               return False;
+            end if;
+         end loop;
+      end if;
+      return False;
+   end "<";
+
+   type Value is range 0 .. 2 ** 64 - 1;
+
+   package Motion_Count_Maps is new
+     Ada.Containers.Ordered_Maps
+       (Key_Type     => Motion_Vector,
+        Element_Type => Value);
+
+   procedure Update_Motions
+     (Curr_Motions : in out Motion_Count_Maps.Map;
+      Motions      : Motion_Vector;
+      Number       : Value)
+   is
+      Motion_Key : Motion_Vector;
+      Ith, Jth   : Positive;
+   begin
+      Ith := 1;
+      while Ith <= Motions.Last_Index loop
+         --  Ith should never actually equal Motions.Last_Index
+         if Motions (Ith) = Direction_A then
+            Motion_Key.Clear;
+            Motion_Key.Append (Direction_A);
+            Jth := Ith;
+         else
+            Jth := Ith + 1;
+            while Motions (Jth) /= Direction_A loop
+               Jth := @ + 1;
+            end loop;
+            Motion_Key.Clear;
+            for Kth in Ith .. Jth loop
+               Motion_Key.Append (Motions (Kth));
+            end loop;
+         end if;
+         if not Curr_Motions.Contains (Motion_Key) then
+            Curr_Motions.Insert (Motion_Key, Number);
+         else
+            Curr_Motions.Replace
+              (Motion_Key, Curr_Motions (Motion_Key) + Number);
+         end if;
+         Ith := Jth + 1;
+      end loop;
+   end Update_Motions;
+
+   procedure Complexity_At_Depth (Depth : Positive := 3) is
+      Motions                    : Motion_Vector;
+      Curr_Motions, Next_Motions : Motion_Count_Maps.Map;
+      Curr_Doorbot               : Door_Key;
+      Curr_Press                 : Direction_Key;
+      Motion                     : Keypad_Motion;
+      Result                     : Value := 0;
+      Ith, Jth                   : Natural;
    begin
       for Code of Door_Key_Codes loop
-         Dirbot_1.Clear;
-         Dirbot_2.Clear;
-         Mebot.Clear;
+         Motions.Clear;
+         Curr_Motions.Clear;
+         --  determine doorbot's needs
          Curr_Doorbot := Door_A;
          for Next_Doorbot of Code loop
             Motion := Door_Motions (Curr_Doorbot, Next_Doorbot);
-            Move_Doorbot (Curr_Doorbot, Motion, Dirbot_1);
-            Dirbot_1.Append (Direction_A);
+            Move_Doorbot (Curr_Doorbot, Motion, Motions);
+            Motions.Append (Direction_A);
             Curr_Doorbot := Next_Doorbot;
          end loop;
-         IO.Put_Line ("one" & Dirbot_1.Length'Image);
-         for Each of Dirbot_1 loop
-            IO.Put (Serialize (Each));
+         --  initialize map
+         IO.Put_Line (Code'Image);
+         Update_Motions (Curr_Motions, Motions, 1);
+         for Cursor in Curr_Motions.Iterate loop
+            for Key of Motion_Count_Maps.Key (Cursor) loop
+               IO.Put (Serialize (Key));
+            end loop;
+            IO.Put_Line (Value'Image (Motion_Count_Maps.Element (Cursor)));
          end loop;
-         IO.New_Line;
-         Curr_Dirbot := Direction_A;
-         for Next_Dirbot of Dirbot_1 loop
-            Motion := Direction_Motions (Curr_Dirbot, Next_Dirbot);
-            Move_Dirbot (Curr_Dirbot, Motion, Dirbot_2);
-            Dirbot_2.Append (Direction_A);
-            Curr_Dirbot := Next_Dirbot;
+         IO.Put_Line ("----");
+         --  propagate
+         for Ith in 2 .. Depth loop
+            Next_Motions.Clear;
+            for Cursor in Curr_Motions.Iterate loop
+               declare
+                  Sequence : constant Motion_Vector :=
+                    Motion_Count_Maps.Key (Cursor);
+                  Number   : constant Value :=
+                    Motion_Count_Maps.Element (Cursor);
+               begin
+                  Curr_Press := Direction_A;
+                  Motions.Clear;
+                  for Next_Press of Sequence loop
+                     IO.Put (Serialize (Next_Press));
+                     Motion := Direction_Motions (Curr_Press, Next_Press);
+                     Move_Dirbot (Curr_Press, Motion, Motions);
+                     Motions.Append (Direction_A);
+                     Curr_Press := Next_Press;
+                  end loop;
+                  IO.Put (" -> ");
+                  for Key of Motions loop
+                     IO.Put (Serialize (Key));
+                  end loop;
+                  IO.New_Line;
+                  Update_Motions (Next_Motions, Motions, Number);
+               end;
+            end loop;
+            Curr_Motions := Next_Motions;
+            for Cursor in Curr_Motions.Iterate loop
+               for Key of Motion_Count_Maps.Key (Cursor) loop
+                  IO.Put (Serialize (Key));
+               end loop;
+               IO.Put_Line (Value'Image (Motion_Count_Maps.Element (Cursor)));
+            end loop;
+            IO.Put_Line ("----");
          end loop;
-         IO.Put_Line ("two" & Dirbot_2.Length'Image);
-         for Each of Dirbot_2 loop
-            IO.Put (Serialize (Each));
+         for Cursor in Curr_Motions.Iterate loop
+            Result :=
+              @
+              + Value (Motion_Count_Maps.Key (Cursor).Length)
+                * Motion_Count_Maps.Element (Cursor)
+                * Value (Numeric_Part (Code));
          end loop;
-         IO.New_Line;
-         Curr_Dirbot := Direction_A;
-         for Next_Dirbot of Dirbot_2 loop
-            Motion := Direction_Motions (Curr_Dirbot, Next_Dirbot);
-            Move_Dirbot (Curr_Dirbot, Motion, Mebot);
-            Mebot.Append (Direction_A);
-            Curr_Dirbot := Next_Dirbot;
-         end loop;
-         IO.Put_Line ("me" & Mebot.Length'Image);
-         for Each of Mebot loop
-            IO.Put (Serialize (Each));
-         end loop;
-         IO.New_Line;
-         IO.Put_Line
-           (Mebot.Length'Image & Natural'Image (Numeric_Part (Code)));
-         Result := @ + Natural (Mebot.Length) * Numeric_Part (Code);
+         IO.Put_Line ("====");
       end loop;
       IO.Put_Line ("total complexity is" & Result'Image);
-   end Part_1;
+   end Complexity_At_Depth;
 
 begin
    Read_Input;
    Setup_Motions;
-   Part_1;
+   Complexity_At_Depth;
+   Complexity_At_Depth (26);
 end Day21;
