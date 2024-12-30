@@ -29,6 +29,7 @@ other historians impress you into saving him.
   * 💻 [Day 17](#-day-17-chronospatial-computer): Chronospatial Computer
   * 🪨 [Day 18](#-day-18-ram-run): RAM Run
   * ♨️ [Day 19](#️-day-19-linen-layout): Linen Layout
+  * 🧱 [Day 20](#-day-20-race-condition): Race Condition
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -95,7 +96,7 @@ Each puzzle listed here also gives a reason for its being so listed.
 
   Part 1 is more or less a straightforward BFS.
   Part 2 can be solved using a repeated BFS as you drop more bytes,
-  and can be solved _fastaer_ using a technique a la
+  and can be solved _faster_ using a technique a la
   [Method of Bisection](en.wikipedia.org/wiki/Bisection_method).
 
 
@@ -136,6 +137,14 @@ Each puzzle listed here also gives a reason for its being so listed.
   and of course that number is larger than Ada's `Natural` type,
   and _of course_ no attempt at recursion seems feasible.
   So... think backwards!
+
+
+* 🧱 [Day 20](#-day-20-race-condition): Race Condition
+
+  Part 1 can be solved using repeated breadth-first-search or some similar approach,
+  but it's quite slow.
+  Part 2 has far too many possibilities to allow for that,
+  but it becomes quite tractable with a little arithmetic.
 
 ### 😱 Great puzzles that are jes' plain ornery
 
@@ -751,3 +760,32 @@ Altogether you have 6 matches, as indicated by the puzzle description.
 
 This approach is _faaaast_, and works for both parts,
 so it replaced my initial solution to Part 1.
+
+### 🧱 Day 20: Race Condition
+
+Another maze problem, again in the computer arena from the 2017 Advent of Code.
+Now they're having a race, where you can cheat by running through some walls.
+In part 1, you can run through at most 1 walls.
+In part 2, you can run through at most 19 walls.
+
+#### Unusual Tools
+* Yet another puzzle where Parts 1 and 2 can be solved using the same subprogram.
+
+#### Experience
+Fun, but not easy!
+Part 1 can be solved in "relatively" straightforward fashion
+using Breadth-First Search, and that's how I did it:
+and it took 4 minutes to run on my machine. **argh**
+So I figured Part 2 would need a smarter approach, even before I read it,
+and after I read it I was convinced.
+
+As it happens, I figured out the right approach pretty quickly:
+there's only one solution when you don't cheat, so just
+track how far any position on the map is from the start and stop.
+The length of any successful cheat path is then
+
+    (steps from ingress from start) + (steps from egress to finish) + (cheat length)
+
+It took me a few iterations to get it right,
+and there was quite a bit of bug stomping along the way,
+but aside from that I had a blast.
