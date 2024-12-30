@@ -61,7 +61,14 @@ procedure Day20 is
 
    Baseline : Natural;
 
-   function Solve (Map : Map_2D.Map_Array := Map_2D.Map) return Natural is
+   Steps_From_Start : array (1 .. Dimension, 1 .. Dimension) of Natural :=
+     [others => [others => Natural'Last]];
+   Steps_To_Finish  : array (1 .. Dimension, 1 .. Dimension) of Natural :=
+     [others => [others => Natural'Last]];
+
+   Map renames Map_2D.Map;
+
+   procedure Solve is
 
       type Path_Record is record
          Location : Location_Record;
@@ -82,10 +89,15 @@ procedure Day20 is
 
       Curr, Next : Path_Record;
 
+      Start renames Map_IO.Start_Location;
+
    begin
-      To_Do.Enqueue ((Map_IO.Start_Location, 0));
+      Steps_From_Start (Start.Row, Start.Col) := 0;
+      To_Do.Enqueue ((Start, 0));
       while Natural (To_Do.Current_Use) > 0 loop
          To_Do.Dequeue (Curr);
+         Steps_From_Start (Curr.Location.Row, Curr.Location.Col) :=
+           Curr.Length;
          exit when Curr.Location = Map_IO.End_Location;
          Done.Include (Curr.Location);
          Next.Length := Curr.Length + 1;
@@ -98,26 +110,56 @@ procedure Day20 is
             end if;
          end loop;
       end loop;
-      return Curr.Length;
+      Baseline := Curr.Length;
+      for Row in 2 .. Dimension - 1 loop
+         for Col in 2 .. Dimension - 1 loop
+            if Map (Row, Col) /= Wall then
+               Steps_To_Finish (Row, Col) :=
+                 Curr.Length - Steps_From_Start (Row, Col);
+            end if;
+         end loop;
+      end loop;
    end Solve;
 
+   subtype Play_Range is Positive range 2 .. Dimension - 1;
+
+   function Can_Cheat_At (Location : Location_Record) return Boolean
+   is (Location.Row in Play_Range
+       and then Location.Col in Play_Range
+       and then Map (Location.Row, Location.Col) /= Wall);
+
    procedure Part_1 is
-      Map    : Map_2D.Map_Array;
+      Curr, Ingress, Egress : Location_Record;
+
+      Length : Natural;
       Result : Natural := 0;
    begin
-      for Row in 2 .. Dimension - 1 loop
-         IO.Put_Line ("Cheating on row" & Row'Image);
-         for Col in 2 .. Dimension - 1 loop
-            Map := Map_2D.Map;
+      for Row in Play_Range loop
+         for Col in Play_Range loop
+            Curr := (Row, Col);
             if Map (Row, Col) = Wall then
-               Map (Row, Col) := Empty;
-               declare
-                  Time : Natural := Solve (Map);
-               begin
-                  if Baseline - Time >= 100 then
+               Length := Natural'Last;
+               for Entry_Dir in Direction loop
+                  Ingress := Curr + Offset (Entry_Dir);
+                  if Can_Cheat_At (Ingress) then
+                     for Exit_Dir in Direction when Exit_Dir /= Entry_Dir loop
+                        Egress := Curr + Offset (Exit_Dir);
+                        if Can_Cheat_At (Egress) then
+                           Length :=
+                             Natural'Min
+                               (Length,
+                                Steps_From_Start (Ingress.Row, Ingress.Col)
+                                + Steps_To_Finish (Egress.Row, Egress.Col)
+                                + 2);
+                        end if;
+                     end loop;
+                  end if;
+               end loop;
+               if Length < Baseline then
+                  if Length <= Baseline - 100 then
                      Result := @ + 1;
                   end if;
-               end;
+               end if;
             end if;
          end loop;
       end loop;
@@ -128,7 +170,7 @@ begin
    Map_IO.Read_Input;
    Map_2D.Map (Map_IO.Start_Location.Row, Map_IO.Start_Location.Col) := Empty;
    Map_2D.Map (Map_IO.End_Location.Row, Map_IO.End_Location.Col) := Empty;
-   Baseline := Solve;
+   Solve;
    IO.Put_Line ("The baseline is" & Baseline'Image);
    Part_1;
 end Day20;
