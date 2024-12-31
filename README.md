@@ -30,6 +30,7 @@ other historians impress you into saving him.
   * 🪨 [Day 18](#-day-18-ram-run): RAM Run
   * ♨️ [Day 19](#️-day-19-linen-layout): Linen Layout
   * 🧱 [Day 20](#-day-20-race-condition): Race Condition
+  * ⌨️ [Day 21](#️-day-21-keypad-conundrum): Keypad Conundrum
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -147,6 +148,15 @@ Each puzzle listed here also gives a reason for its being so listed.
   but it becomes quite tractable with a little arithmetic.
 
 ### 😱 Great puzzles that are jes' plain ornery
+
+* ⌨️ [Day 21](#️-day-21-keypad-conundrum): Keypad Conundrum
+
+  A twist that `<^` is a better choice than `^<` (!),
+  multiple levels of indirection (!!),
+  and combinatorial explosion in Part 2 (!!!).
+  Does it surprise anyone that, as of this writing,
+  competitors have earned the fewest stars on this puzzle
+  -- **and it isn't even close**?
 
 ### 😭 What was the puzzle master thinking?!?
 
@@ -789,3 +799,40 @@ The length of any successful cheat path is then
 It took me a few iterations to get it right,
 and there was quite a bit of bug stomping along the way,
 but aside from that I had a blast.
+
+### ⌨️ Day 21: Keypad Conundrum
+
+A historian has gone missing. He's locked in a room.
+To get him out, you need to unlock a door, but the door is not accessible,
+so you need to send instructions to a robot on how to open the door,
+but that robot is not accessible, so ... etc.
+In part 1, you have 2 intermediate robots.
+In part 2, you have 25 intermediate robots.
+
+#### Unusual tools
+
+* Solved both parts through the same subprograms.
+* Blood, sweat, and tears.
+
+#### Experience
+
+This puzzle discouraged me.
+Ironically, I worked out the right approach to part 1,
+and I managed to make it work on the example,
+but I implemented it incompletely.
+I had already spent so long on it that I figured I was way off.
+I scrapped it and started on a different approach,
+but that produced even worse results.
+So I did some reading online about other's approaches,
+in particular [this article](https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/)
+for Part 1, which confirmed that I had the right idea before scrapping it.
+(For example, I realized that it was important to go left before up when possible,
+but I goofed on the part about being over the hole.)
+Armed with the additional knowledge, I successfully re-implemented it.
+
+I tried to move on to Part 2, but quickly discovered its combinatorial explosion.
+I was too exhausted to analyze it in detail, so
+I read [this article](https://observablehq.com/@jwolondon/advent-of-code-2024-day-21).
+I felt sheepish reading it, inasmuch as the technique described is nearly identical
+to what I implemented way back on [Day 11](#-day-11-plutonian-pebbles).
+Implementing it was a bit tougher in this case, but it led me to the solution.

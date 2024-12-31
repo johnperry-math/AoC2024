@@ -69,6 +69,7 @@ procedure Day21 is
 
    type Direction_Key is (Up, Down, Left, Right, Direction_A);
 
+   pragma Warnings (Off, "function ""Serialize"" is not referenced");
    function Serialize (Direction : Direction_Key) return Character
    is (case Direction is
          when Up => '^',
@@ -324,7 +325,6 @@ procedure Day21 is
       Curr_Press                 : Direction_Key;
       Motion                     : Keypad_Motion;
       Result                     : Value := 0;
-      Ith, Jth                   : Natural;
    begin
       for Code of Door_Key_Codes loop
          Motions.Clear;
@@ -338,15 +338,7 @@ procedure Day21 is
             Curr_Doorbot := Next_Doorbot;
          end loop;
          --  initialize map
-         IO.Put_Line (Code'Image);
          Update_Motions (Curr_Motions, Motions, 1);
-         for Cursor in Curr_Motions.Iterate loop
-            for Key of Motion_Count_Maps.Key (Cursor) loop
-               IO.Put (Serialize (Key));
-            end loop;
-            IO.Put_Line (Value'Image (Motion_Count_Maps.Element (Cursor)));
-         end loop;
-         IO.Put_Line ("----");
          --  propagate
          for Ith in 2 .. Depth loop
             Next_Motions.Clear;
@@ -360,28 +352,15 @@ procedure Day21 is
                   Curr_Press := Direction_A;
                   Motions.Clear;
                   for Next_Press of Sequence loop
-                     IO.Put (Serialize (Next_Press));
                      Motion := Direction_Motions (Curr_Press, Next_Press);
                      Move_Dirbot (Curr_Press, Motion, Motions);
                      Motions.Append (Direction_A);
                      Curr_Press := Next_Press;
                   end loop;
-                  IO.Put (" -> ");
-                  for Key of Motions loop
-                     IO.Put (Serialize (Key));
-                  end loop;
-                  IO.New_Line;
                   Update_Motions (Next_Motions, Motions, Number);
                end;
             end loop;
             Curr_Motions := Next_Motions;
-            for Cursor in Curr_Motions.Iterate loop
-               for Key of Motion_Count_Maps.Key (Cursor) loop
-                  IO.Put (Serialize (Key));
-               end loop;
-               IO.Put_Line (Value'Image (Motion_Count_Maps.Element (Cursor)));
-            end loop;
-            IO.Put_Line ("----");
          end loop;
          for Cursor in Curr_Motions.Iterate loop
             Result :=
@@ -390,7 +369,6 @@ procedure Day21 is
                 * Motion_Count_Maps.Element (Cursor)
                 * Value (Numeric_Part (Code));
          end loop;
-         IO.Put_Line ("====");
       end loop;
       IO.Put_Line ("total complexity is" & Result'Image);
    end Complexity_At_Depth;
