@@ -98,6 +98,13 @@ procedure Day21 is
       DRow, DCol : Integer;
    end record;
 
+   function Leftward (Motion : Keypad_Motion) return Boolean
+   is (Motion.DCol < 0);
+   function Upward (Motion : Keypad_Motion) return Boolean
+   is (Motion.DRow < 0);
+   function Downward (Motion : Keypad_Motion) return Boolean
+   is (Motion.DRow > 0);
+
    Door_Motions      : array (Door_Key, Door_Key) of Keypad_Motion;
    Direction_Motions : array (Direction_Key, Direction_Key) of Keypad_Motion;
 
@@ -150,58 +157,56 @@ procedure Day21 is
    function Numeric_Part (Code : Door_Key_Array) return Natural
    is (Digit (Code (1)) * 100 + Digit (Code (2)) * 10 + Digit (Code (3)));
 
+   procedure Move_Horiz_Then_Vert
+     (Motion : Keypad_Motion; Motions : in out Motion_Vector) is
+   begin
+      for Each in 1 .. abs (Motion.DCol) loop
+         Motions.Append (if Motion.DCol < 0 then Left else Right);
+      end loop;
+      for Each in 1 .. abs (Motion.DRow) loop
+         Motions.Append (if Motion.DRow < 0 then Up else Down);
+      end loop;
+   end Move_Horiz_Then_Vert;
+
+   procedure Move_Vert_Then_Horiz
+     (Motion : Keypad_Motion; Motions : in out Motion_Vector) is
+
+   begin
+      for Each in 1 .. abs (Motion.DRow) loop
+         Motions.Append (if Motion.DRow < 0 then Up else Down);
+      end loop;
+      for Each in 1 .. abs (Motion.DCol) loop
+         Motions.Append (if Motion.DCol < 0 then Left else Right);
+      end loop;
+   end Move_Vert_Then_Horiz;
+
    procedure Move_Doorbot
      (Start : Door_Key; Motion : Keypad_Motion; Motions : in out Motion_Vector)
    is
       Start_Position : constant Door_Record := Door_Key_Positions (Start);
    begin
-      if Motion.DCol < 0 then
+      if Leftward (Motion) then
          --  moving left
          if Start in One .. Nine
            or else (Start = Door_A and then Motion.DCol = -1)
          then
-            for Each in 1 .. abs (Motion.DCol) loop
-               Motions.Append (Left);
-            end loop;
-            for Each in 1 .. abs (Motion.DRow) loop
-               Motions.Append (if Motion.DRow < 0 then Up else Down);
-            end loop;
+            Move_Horiz_Then_Vert (Motion, Motions);
          else
             --  0 or A, with too large a leftward motion
-            for Each in 1 .. abs (Motion.DRow) loop
-               Motions.Append (if Motion.DRow < 0 then Up else Down);
-            end loop;
-            for Each in 1 .. abs (Motion.DCol) loop
-               Motions.Append (Left);
-            end loop;
+            Move_Vert_Then_Horiz (Motion, Motions);
          end if;
-      elsif Motion.DRow > 0 then
+      elsif Downward (Motion) then
          --  moving down and not-left
          if Start_Position.Col = 1 and then Motion.DRow = Start_Position.Row
          then
             --  1, 4, or 7, with too large a downward motion
-            for Each in 1 .. Motion.DCol loop
-               Motions.Append (Right);
-            end loop;
-            for Each in 1 .. Motion.DRow loop
-               Motions.Append (Down);
-            end loop;
+            Move_Horiz_Then_Vert (Motion, Motions);
          else
-            for Each in 1 .. Motion.DRow loop
-               Motions.Append (Down);
-            end loop;
-            for Each in 1 .. Motion.DCol loop
-               Motions.Append (Right);
-            end loop;
+            Move_Vert_Then_Horiz (Motion, Motions);
          end if;
       else
          --  moving up and not-left
-         for Each in 1 .. abs (Motion.DRow) loop
-            Motions.Append (Up);
-         end loop;
-         for Each in 1 .. Motion.DCol loop
-            Motions.Append (Right);
-         end loop;
+         Move_Vert_Then_Horiz (Motion, Motions);
       end if;
    end Move_Doorbot;
 
@@ -210,51 +215,26 @@ procedure Day21 is
       Motion  : Keypad_Motion;
       Motions : in out Motion_Vector) is
    begin
-      if Motion.DCol < 0 then
+      if Leftward (Motion) then
          --  moving left
          if (Start = Down or else Start = Right)
            or else (Start = Direction_A and then Motion.DCol = -1)
          then
-            for Each in 1 .. abs (Motion.DCol) loop
-               Motions.Append (Left);
-            end loop;
-            for Each in 1 .. abs (Motion.DRow) loop
-               Motions.Append (if Motion.DRow < 0 then Up else Down);
-            end loop;
+            Move_Horiz_Then_Vert (Motion, Motions);
          else
             --  Up or A, with too large a leftward motion
-            for Each in 1 .. abs (Motion.DRow) loop
-               Motions.Append (Down);
-            end loop;
-            for Each in 1 .. abs (Motion.DCol) loop
-               Motions.Append (Left);
-            end loop;
+            Move_Vert_Then_Horiz (Motion, Motions);
          end if;
-      elsif Motion.DRow < 0 then
+      elsif Upward (Motion) then
          --  moving up and not-left
          if Start = Left then
-            for Each in 1 .. Motion.DCol loop
-               Motions.Append (Right);
-            end loop;
-            for Each in 1 .. abs (Motion.DRow) loop
-               Motions.Append (Up);
-            end loop;
+            Move_Horiz_Then_Vert (Motion, Motions);
          else
-            for Each in 1 .. abs (Motion.DRow) loop
-               Motions.Append (Up);
-            end loop;
-            for Each in 1 .. Motion.DCol loop
-               Motions.Append (Right);
-            end loop;
+            Move_Vert_Then_Horiz (Motion, Motions);
          end if;
       else
          --  moving down and not-left
-         for Each in 1 .. Motion.DRow loop
-            Motions.Append (Down);
-         end loop;
-         for Each in 1 .. Motion.DCol loop
-            Motions.Append (Right);
-         end loop;
+         Move_Vert_Then_Horiz (Motion, Motions);
       end if;
    end Move_Dirbot;
 
