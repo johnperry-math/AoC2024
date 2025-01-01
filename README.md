@@ -31,6 +31,7 @@ other historians impress you into saving him.
   * ♨️ [Day 19](#️-day-19-linen-layout): Linen Layout
   * 🧱 [Day 20](#-day-20-race-condition): Race Condition
   * ⌨️ [Day 21](#️-day-21-keypad-conundrum): Keypad Conundrum
+  * 🐒 [Day 22](#-day-22-monkey-market): Monkey Market
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -99,7 +100,17 @@ Each puzzle listed here also gives a reason for its being so listed.
   Part 2 can be solved using a repeated BFS as you drop more bytes,
   and can be solved _faster_ using a technique a la
   [Method of Bisection](en.wikipedia.org/wiki/Bisection_method).
+* 🐒 [Day 22](#-day-22-monkey-market): Monkey Market
+  
+  I thought about listing this under "quick 'n easy", because Part 1 really is,
+  and I worked out Part 2 almost immediately.
+  On reflection, though, I worked out Part 2 so quickly only because
+  I realized immediately that a naive approach along the lines of,
+  "compute them all, then search through them," would not work.
+  Plus, I had no idea how to do that, anyway.
+  So I had to think about it a few minutes, which lands it under this category.
 
+  But just barely.
 
 ### 😨 Problems requiring a lot of thought, or trickier ideas
 
@@ -836,3 +847,47 @@ I read [this article](https://observablehq.com/@jwolondon/advent-of-code-2024-da
 I felt sheepish reading it, inasmuch as the technique described is nearly identical
 to what I implemented way back on [Day 11](#-day-11-plutonian-pebbles).
 Implementing it was a bit tougher in this case, but it led me to the solution.
+
+### 🐒 Day 22: Monkey Market
+
+You're back with the monkeys that you dealt with in the 2022 Advent of Code.
+
+The writing alone is immensely entertaining:
+* One of them has stolen the historians' device,
+  but is willing to ransom it for "an absurd number of bananas;"
+* this means you have to trade on the Monkey Market;
+* Monkey Market prices are based on secret numbers,
+  which you have to work out in part 1;
+* "(o)f course, the secret numbers aren't the prices each buyer is offering!
+  That would be ridiculous;"
+* "you still don't speak monkey," so a historian who is helping you
+  gets another monkey to negotiate on your behalf;
+* "the monkey only knows how to decide when to sell
+  by looking at the changes in price;"
+* "you can only give the monkey a single sequence of four price changes...
+  You can't change the sequence between buyers;"
+* under these conditions, part 2 has you determine the most bananas you can buy.
+
+#### Unusual tools
+
+Both parts are solved in one procedure.
+The setup up to do that is arguably unusual:
+a 21×21×21×21 array of 64-bit numbers
+that stores the sum of the the bids corresponding to changes.
+
+Otherwise, nothing in particular.
+
+#### Experience
+
+Fun and easy!
+I solved Part 1 in about 30 minutes, and Part 2 in the next 60 or so.
+However, while it looked as if I had the right answer on the example,
+I was trying to be careful, so wanted to make sure I understood my diagnostics,
+but I wasn't succeeding at being careful, so I misread my diagnostics,
+so I put off debugging until after the morning Mass
+in honor of Mary's Motherhood of God, adn then after lunch,
+at which point I took another look at what I had.
+It didn't take too long before I realized that I had misread the diagnostic:
+I was looking for the changes `3, -1, 1, -2`
+and the editor's Find functionality was also picking up `-3, -1, 1, -2`,
+and I neglected to notice the negative sign.
