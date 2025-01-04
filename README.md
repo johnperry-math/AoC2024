@@ -32,6 +32,7 @@ other historians impress you into saving him.
   * 🧱 [Day 20](#-day-20-race-condition): Race Condition
   * ⌨️ [Day 21](#️-day-21-keypad-conundrum): Keypad Conundrum
   * 🐒 [Day 22](#-day-22-monkey-market): Monkey Market
+  * 🛜 [Day 23](#-day-23-lan-party): LAN Party
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -157,6 +158,16 @@ Each puzzle listed here also gives a reason for its being so listed.
   but it's quite slow.
   Part 2 has far too many possibilities to allow for that,
   but it becomes quite tractable with a little arithmetic.
+
+* 🛜 [Day 23](#-day-23-lan-party): LAN Party
+
+  Part 1 isn't too bad; a straightforward approach works.
+  Part 2 has a combinatorial explosion.
+  I didn't find a Monte Carlo method that would work in reasonable time --
+  you're looking for a needle in a haystack, after all --
+  but thinking about it a while gave me an approach that works,
+  and that _more or less makes sense_, though I haven't proved it
+  and suspect it may have difficulties in the general case.
 
 ### 😱 Great puzzles that are jes' plain ornery
 
@@ -891,3 +902,78 @@ It didn't take too long before I realized that I had misread the diagnostic:
 I was looking for the changes `3, -1, 1, -2`
 and the editor's Find functionality was also picking up `-3, -1, 1, -2`,
 and I neglected to notice the negative sign.
+
+### 🛜 Day 23: LAN Party
+
+Back at Easter Bunny HQ, which you first visited in the 2016 Advent of Code,
+there's a LAN party going on, and you think the missing historian may be there.
+In part 1, you find all where 3 computers are connected to each other
+_and_ at least one starts with `t`.
+In part 2, you find the longest network.
+
+#### Unusual tools
+
+Nothing in particular.
+
+#### Experience
+
+Fun, but not easy! Part 1 is fairly straightforward.
+Part 2 requires more thought, as a straightforward, recursive exploration
+quickly gets ugly.
+I also tried a Monte Carlo approach, to no avail,
+but I did notice that my Monte Carlo approach almost always gave me
+a network with 10 computers.
+Each computers is linked to 12 other computers,
+so I reasoned that the longest network _had_ to be connected
+to at least 11 other computers.
+_How to find it?_
+
+Reasoning on this some more, I realized that
+if we considered each computer's set of connections,
+computing the intersections with the listed computers
+would indicate which computers were completely connected.
+Using the example:
+* We are told `co` connects with `de`, `ka`, `ta`, `tc`.
+* Consider the set {`co`, `de`, `ka`, `ta`, `tc`}.
+* The intersection of that set with `de`'s connections
+  is {`co`, `de`, `ka`, `ta`}.
+* If we continue intersecting with `ka`'s and `ta`'s connectors,
+  we _still_ get the same set.
+* This fails when we try with `tc`'s connectors,
+  so we can ignore its connectors.
+
+_How to apply that?_
+
+What I finally did was count
+the number of interconnections of the subnet's nodes,
+and collect the subnet's owning node with the nodes' maximal connections,
+checking for consistency, then use the largest result.
+
+In the case above, that would give:
+* `de`: 3 (it connects with `co`, `ka`, and `ta`)
+* `ka`: 3 (it connects with `co`, `de`, and `ta`)
+* `ta`: 3 (it connects with `co`, `de`, and `ka`)
+* `tc`: 1 (it connects only with `co`)
+
+So `co`, `de`, `ka`, and `ta` are all interconnected,
+giving a LAN of 4 nodes.
+
+Consider the subnet given for `td`, which contains `qp`, `tc`, `wh`, `yn`.
+Counting again, we find that the nodes' interconnections are
+* `qp`: 2 (`td` and `wh`)
+* `tc`: 2 (`td` and `wh`)
+* `wh`: 4 (all the others!)
+* `yn`: 2 (`td` and `wh`)
+
+Here we pick `wh` and include `td`, but that's a LAN of 2 nodes,
+inconsistent with the prediction of 4, so we move on.
+
+_Why does this make sense?_
+
+The LAN has all computers connected to each other,
+so they ought to list each other as connections.
+The puzzle implies there is only one maximal LAN,
+so the largest interconnected subnet consistent with
+the predicted number of connections has to be the correct answer.
+
+I _think_. 🤔 😀
