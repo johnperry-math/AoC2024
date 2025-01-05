@@ -33,6 +33,7 @@ other historians impress you into saving him.
   * ⌨️ [Day 21](#️-day-21-keypad-conundrum): Keypad Conundrum
   * 🐒 [Day 22](#-day-22-monkey-market): Monkey Market
   * 🛜 [Day 23](#-day-23-lan-party): LAN Party
+  * ➰ [Day 24](#-day-24-crossed-wires): Crossed Wires
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -179,6 +180,14 @@ Each puzzle listed here also gives a reason for its being so listed.
   Does it surprise anyone that, as of this writing,
   competitors have earned the fewest stars on this puzzle
   -- **and it isn't even close**?
+
+* ➰ [Day 24](#-day-24-crossed-wires): Crossed Wires
+
+  My solution is interactive. It can probably be solved automatically,
+  but I've already thrown several hours of work at this thing,
+  and comments indicate how it should be used for any given input,
+  always under the puzzle's assumptions
+  that exactly 4 pairs of wires were swapped.
 
 ### 😭 What was the puzzle master thinking?!?
 
@@ -977,3 +986,22 @@ so the largest interconnected subnet consistent with
 the predicted number of connections has to be the correct answer.
 
 I _think_. 🤔 😀
+
+### ➰ Day 24: Crossed Wires
+
+We're back in the jungle from the 2022 Advent of Code.
+A fruit monitor is acting up.
+In part 1, you determine what it's output is for a given pair of inputs.
+In part 2, you identify the four pairs of gates that need to be swapped.
+
+#### Unusual tools
+
+The solution for Part 2 is interactive; that is,
+the user has to run the program after commenting out a few lines
+(indicated in a comment),
+and from the output determine what pairs of gates need swapping.
+
+#### Experience
+
+Fun, but not easy!
+Part 1 wasn't so bad, but Part 2 took me quite a bit of time and exploration.
