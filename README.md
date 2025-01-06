@@ -34,6 +34,7 @@ other historians impress you into saving him.
   * 🐒 [Day 22](#-day-22-monkey-market): Monkey Market
   * 🛜 [Day 23](#-day-23-lan-party): LAN Party
   * ➰ [Day 24](#-day-24-crossed-wires): Crossed Wires
+  * 🔐 [Day 25](#-day-25-code-chronicle): Code Chronicle
 
 ## Ranking of problems by difficulty
 This is inherently subjective, and I may even misremember how difficult I found a problem, so if you disagree, at least check out the justification I give in the relevant day's Experience section.
@@ -56,6 +57,7 @@ which is sometimes the main dividing line between "quick 'n easy" and "needing a
 * 📡 [Day 8](#-day-8-resonant-collinearity): Resonant Collinearity
 * 💾 [Day 9](#-day-9-disk-fragmenter): Disk Fragmenter
 * 🤖 [Day 15](#-day-15-warehouse-woes): Warehouse Woes
+* 🔐 [Day 25](#-day-25-code-chronicle): Code Chronicle
 
 
 ### 🤔 Puzzles needing a little more thought
@@ -1005,3 +1007,20 @@ and from the output determine what pairs of gates need swapping.
 
 Fun, but not easy!
 Part 1 wasn't so bad, but Part 2 took me quite a bit of time and exploration.
+
+### 🔐 Day 25: Code Chronicle
+
+Having exhausted the possibilities, you're back at the Chief Historian's office
+and you find that it's locked.
+In part 1, you need to determine which keys might be used wth which locks.
+Part 2 is the usually "gimme" on Day 25.
+
+#### Unusual tools
+
+Nothing in particular.
+
+#### Experience
+
+Fun and easy! Thanks, puzzle master!
+
+(Srsly, tho, umadbro? Usually there's at least a _mild_ challenge.)
